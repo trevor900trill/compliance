@@ -1,36 +1,53 @@
-'''
-# Project Blueprint
+
+# Nairobi County Government Staff Portal - Blueprint
 
 ## Overview
 
-This document outlines the architecture and design of the Flutter application. The app is a secure, state-managed application with a modern, greenish theme.
+This document outlines the design, features, and architecture of the Nairobi County Government (NCG) Official Staff Portal. The application is designed to be a secure, professional, and user-friendly platform for NCG staff to access internal services.
 
-## Style, Design, and Features
+## Design & Style Guide
 
-### Authentication
+### Color Palette
 
-*   **BLoC State Management:** The authentication flow is managed by `AuthBloc`, which handles login, logout, and session persistence.
-*   **Secure Routing:** `go_router` is configured with an authentication guard to protect routes.
-*   **UI:**
-    *   **Login Page:** A visually engaging login page with a gradient background, a "lifted" card UI for the login form, and icons in the text fields.
-    *   **OTP Page:** A simple page for OTP verification.
-    *   **Home Page:** The main page after login, with a sidebar and logout button.
+- **Primary Color:** `#006A4E` (Deep Green) - Inspired by the Kenyan flag, used for headers, buttons, and primary accents.
+- **Accent Color:** `#B22234` (Red) - Used for error messages and critical alerts.
+- **Text Color:** `#000000` (Black) - Used for all body text and headings.
+- **Background Color:** `#F5F5F5` (Off-white) - Provides a clean and professional backdrop.
 
-### Theme
+### Typography
 
-*   **Material 3:** The application uses Material 3 design principles.
-*   **Color Scheme:** A vibrant, greenish theme generated from a seed color using `ColorScheme.fromSeed`.
-*   **Typography:** Custom fonts from `google_fonts` are used for improved readability.
+- **Primary Font:** 'Lato' (from Google Fonts) - Chosen for its clarity and professional appearance.
+- **Headings:** Bold weight, various sizes.
+- **Body Text:** Regular weight.
 
-### Architecture
+### Branding
 
-*   **Feature-based Structure:** The project is organized by features (e.g., `auth`, `home`).
-*   **BLoC for State Management:** The BLoC pattern is used for predictable state management.
-*   **Provider for Dependency Injection:** `provider` is used for dependency injection.
+- **Logo:** A circular logo with the initials "NCG" in the primary green color.
+- **Watermark:** A subtle background watermark of the NCG logo is used on authentication screens for brand reinforcement.
 
-## Current Plan
+## Features
 
-*   [x] Enhance the theme with Material 3 and `google_fonts`.
-*   [x] Redesign the login page to be more visually appealing.
-*   [ ] Check for any errors and ensure the application is runnable.
-'''
+### Implemented
+
+- **Authentication:**
+  - Secure login with Staff ID and password.
+  - OTP verification for two-factor authentication.
+- **Responsive Design:**
+  - All pages are designed to be fully responsive, adapting to various screen sizes from mobile phones to tablets and desktops.
+  - The login screen features a two-column layout on larger screens, which collapses to a single column on smaller devices.
+- **Consistent UI/UX:**
+  - A unified design language is applied across all pages, ensuring a consistent user experience.
+  - A centralized theme manages colors, fonts, and component styles.
+
+### Current Plan: Initial Design and Implementation
+
+- **Objective:** Redesign the application to be professional, responsive, and consistent, suitable for the Nairobi County Government.
+- **Steps:**
+  1. **Establish Professional Theme:** Create a new theme with a color palette inspired by the Kenyan flag and professional typography.
+  2. **Implement Responsive Layouts:** Ensure all pages adapt to different screen sizes.
+  3. **Redesign Core Pages:**
+      - **Login Page:** Redesign with the new branding, typography, and responsive layout.
+      - **OTP Page:** Update to match the new design and improve user experience.
+      - **Home Page:** Transform into a professional dashboard structure.
+  4. **Update Project Blueprint:** Document the new design system and architectural changes.
+

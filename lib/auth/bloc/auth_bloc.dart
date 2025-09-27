@@ -9,17 +9,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({required this.sharedPreferences}) : super(AuthInitial()) {
     on<LoginRequested>((event, emit) async {
+      emit(AuthLoading());
       // In a real app, you would authenticate with a backend.
       // For this example, we'll just simulate a successful login.
+      await Future.delayed(
+        const Duration(seconds: 2),
+      ); // Simulate network delay
       if (event.staffId == '1234' && event.password == 'password') {
-        await sharedPreferences.setBool('isLoggedIn', true);
-        emit(AuthSuccess());
+        emit(AuthOtpVerification());
       } else {
         emit(AuthFailure(error: 'Invalid credentials'));
       }
     });
 
-    on<OtpVerified>((event, emit) {
+    on<OtpVerified>((event, emit) async {
+      await sharedPreferences.setBool('isLoggedIn', true);
       emit(AuthSuccess());
     });
 

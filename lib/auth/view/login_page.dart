@@ -1,107 +1,189 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../bloc/auth_bloc.dart';
+import '../../theme.dart';
+import 'custom_text_field.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final staffIdController = TextEditingController();
-    final passwordController = TextEditingController();
+    final isTablet = MediaQuery.of(context).size.width > 600;
 
     return Scaffold(
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthSuccess) {
-            context.go('/otp');
-          } else if (state is AuthFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error)),
-            );
-          }
-        },
-        builder: (context, state) {
-          return Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.green.shade200,
-                  Colors.green.shade600,
-                ],
-              ),
-            ),
-            child: Center(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Card(
-                    elevation: 8,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Welcome Back',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          const SizedBox(height: 24),
-                          TextField(
-                            controller: staffIdController,
-                            decoration: const InputDecoration(
-                              labelText: 'Staff ID',
-                              prefixIcon: Icon(Icons.person_outline),
-                              border: OutlineInputBorder(),
+      body: Row(
+        children: [
+          if (isTablet)
+            Expanded(
+              flex: 2,
+              child: Container(
+                color: AppTheme.primaryColor,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withAlpha(25),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
                             ),
+                          ],
+                        ),
+                        child: Text(
+                          'NCG',
+                          style: GoogleFonts.lato(
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primaryColor,
                           ),
-                          const SizedBox(height: 16),
-                          TextField(
-                            controller: passwordController,
-                            decoration: const InputDecoration(
-                              labelText: 'Password',
-                              prefixIcon: Icon(Icons.lock_outline),
-                              border: OutlineInputBorder(),
-                            ),
-                            obscureText: true,
-                          ),
-                          const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: () {
-                              context.read<AuthBloc>().add(LoginRequested(
-                                    staffId: staffIdController.text,
-                                    password: passwordController.text,
-                                  ));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 48,
-                                vertical: 16,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text('Login'),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Nairobi City County',
+                        style: GoogleFonts.lato(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        'Official Staff Portal',
+                        style: GoogleFonts.lato(
+                          fontSize: 18,
+                          color: Colors.white.withAlpha(204),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          );
-        },
+          Expanded(
+            flex: 3,
+            child: Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(40.0),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 450),
+                    child: const LoginForm(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class LoginForm extends StatefulWidget {
+  const LoginForm({super.key});
+
+  @override
+  State<LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  final _staffIdController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscureText = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          context.go('/otp');
+        } else if (state is AuthFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: AppTheme.accentColor,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Welcome Back',
+              style: GoogleFonts.lato(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Please enter your credentials to log in.',
+              style: GoogleFonts.lato(
+                fontSize: 16,
+                color: AppTheme.textColor.withAlpha(153),
+              ),
+            ),
+            const SizedBox(height: 40),
+            CustomTextField(
+              labelText: 'Staff ID',
+              prefixIcon: Icons.person_outline,
+              controller: _staffIdController,
+            ),
+            const SizedBox(height: 20),
+            CustomTextField(
+              labelText: 'Password',
+              prefixIcon: Icons.lock_outline,
+              controller: _passwordController,
+              obscureText: _obscureText,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: state is AuthLoading
+                  ? null
+                  : () {
+                      context.read<AuthBloc>().add(LoginRequested(
+                            staffId: _staffIdController.text,
+                            password: _passwordController.text,
+                          ));
+                    },
+              child: state is AuthLoading
+                  ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 3,
+                      ),
+                    )
+                  : const Text('LOGIN'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
