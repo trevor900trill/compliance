@@ -34,6 +34,9 @@ class OtpPage extends StatelessWidget {
                 const OtpInput(),
                 const SizedBox(height: 32.0),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(200, 50), 
+                  ),
                   onPressed: () {
                     // In a real app, you'd verify the OTP.
                     // Here, we'll just simulate a successful verification.
