@@ -23,48 +23,13 @@ class LoginPage extends StatelessWidget {
               child: Container(
                 color: AppTheme.primaryColor,
                 child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withAlpha(25),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          'NCG',
-                          style: GoogleFonts.lato(
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryColor,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Nairobi City County',
-                        style: GoogleFonts.lato(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        'Official Staff Portal',
-                        style: GoogleFonts.lato(
-                          fontSize: 18,
-                          color: Colors.white.withAlpha(204),
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    'LOGO',
+                    style: GoogleFonts.lato(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

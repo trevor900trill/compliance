@@ -49,24 +49,12 @@ class HomePageNarrow extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Staff Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.person_outline),
-            onPressed: () {},
-          ),
+        actions: const [
+          UserProfileIcon(),
         ],
       ),
       drawer: const AppDrawer(),
-      body: const Center(
-        child: Text(
-          'Dashboard',
-          style: TextStyle(fontSize: 18),
-        ),
-      ),
+      body: const DashboardContent(),
     );
   }
 }
@@ -96,28 +84,12 @@ class HomePageWide extends StatelessWidget {
                             .headlineMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.notifications_none),
-                            onPressed: () {},
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.person_outline),
-                            onPressed: () {},
-                          ),
-                        ],
-                      )
+                      const UserProfileIcon(),
                     ],
                   ),
                 ),
                 const Expanded(
-                  child: Center(
-                    child: Text(
-                      'Dashboard',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
+                  child: DashboardContent(),
                 ),
               ],
             ),
@@ -143,47 +115,21 @@ class SideNavigationPanel extends StatelessWidget {
         ),
         child: Column(
           children: [
-            // User Profile Section
-            Container(
-              padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
-              width: double.infinity,
-              color: AppTheme.primaryColor,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      size: 40,
-                      color: AppTheme.primaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'John Doe',
-                    style: GoogleFonts.lato(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'Staff ID: 1234',
-                    style: GoogleFonts.lato(
-                      color: Colors.white.withAlpha(204),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
+             Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'LOGO',
+                style: GoogleFonts.lato(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryColor,
+                ),
               ),
             ),
             const Divider(height: 1),
-            // Navigation Items
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
                 children: [
                   _buildNavItem(
                     context,
@@ -191,13 +137,39 @@ class SideNavigationPanel extends StatelessWidget {
                     title: 'Dashboard',
                     isSelected: true,
                   ),
+                   _buildNavItem(
+                    context,
+                    icon: Icons.document_scanner_outlined,
+                    title: 'Validate Document',
+                  ),
+                  _buildNavItem(
+                    context,
+                    icon: Icons.people_outline,
+                    title: 'Customer Management',
+                  ),
+                  _buildNavItem(
+                    context,
+                    icon: Icons.grid_view_outlined,
+                    title: 'Services',
+                  ),
+                   _buildNavItem(
+                    context,
+                    icon: Icons.security_outlined,
+                    title: 'Inspection',
+                  ),
+                  _buildNavItem(
+                    context,
+                    icon: Icons.policy_outlined,
+                    title: 'Enforcement',
+                  ),
+                   _buildNavItem(
+                    context,
+                    icon: Icons.map_outlined,
+                    title: 'Maps',
+                  ),
                 ],
               ),
             ),
-
-            const Divider(height: 1, color: Color.fromARGB(255, 224, 224, 224)),
-            // Logout Button
-            _buildLogoutButton(context),
           ],
         ));
   }
@@ -263,11 +235,39 @@ class AppDrawer extends StatelessWidget {
                   title: 'Dashboard',
                   isSelected: true,
                 ),
+                 _buildNavItem(
+                    context,
+                    icon: Icons.document_scanner_outlined,
+                    title: 'Validate Document',
+                  ),
+                  _buildNavItem(
+                    context,
+                    icon: Icons.people_outline,
+                    title: 'Customer Management',
+                  ),
+                  _buildNavItem(
+                    context,
+                    icon: Icons.grid_view_outlined,
+                    title: 'Services',
+                  ),
+                   _buildNavItem(
+                    context,
+                    icon: Icons.security_outlined,
+                    title: 'Inspection',
+                  ),
+                  _buildNavItem(
+                    context,
+                    icon: Icons.policy_outlined,
+                    title: 'Enforcement',
+                  ),
+                   _buildNavItem(
+                    context,
+                    icon: Icons.map_outlined,
+                    title: 'Maps',
+                  ),
               ],
             ),
           ),
-          const Divider(height: 1, color: Color.fromARGB(255, 224, 224, 224)),
-          _buildLogoutButton(context),
         ],
       ),
     );
@@ -280,34 +280,42 @@ Widget _buildNavItem(BuildContext context, {
   bool isSelected = false,
   VoidCallback? onTap,
 }) {
-  return Material(
+  return Container(
+    decoration: BoxDecoration(
+      border: Border(left: BorderSide(color: isSelected ? AppTheme.primaryColor: Colors.transparent, width: 3)),
+    ),
+    child: Material(
     color: isSelected ? AppTheme.primaryColor.withAlpha(26) : Colors.transparent,
-    borderRadius: BorderRadius.circular(8),
     child: InkWell(
       onTap: onTap ?? () => Navigator.pop(context),
-      borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
             Icon(
               icon,
               color: isSelected ? AppTheme.primaryColor : AppTheme.textColor.withAlpha(178),
+              size: 20,
             ),
             const SizedBox(width: 16),
             Text(
               title,
               style: GoogleFonts.lato(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 color: isSelected ? AppTheme.primaryColor : AppTheme.textColor,
               ),
             ),
+            const Spacer(),
+            if(isSelected)
+              const Icon(Icons.arrow_forward_ios, size: 14, color: AppTheme.primaryColor)
           ],
         ),
       ),
     ),
+  ), 
   );
+  
 }
 
 void _showLogoutConfirmationDialog(BuildContext context) {
@@ -339,28 +347,145 @@ void _showLogoutConfirmationDialog(BuildContext context) {
   );
 }
 
-Widget _buildLogoutButton(BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: ElevatedButton.icon(
-      icon: const Icon(Icons.logout, color: Colors.red),
-      label: Text(
-        'Logout',
-        style: GoogleFonts.lato(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.red,
+class UserProfileIcon extends StatelessWidget {
+  const UserProfileIcon({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton(
+      offset: const Offset(0, 40),
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 'profile',
+          child: ListTile(
+            leading: Icon(Icons.person_outline),
+            title: Text('Profile'),
+          ),
+        ),
+        const PopupMenuItem(
+          value: 'logout',
+          child: ListTile(
+            leading: Icon(Icons.logout, color: Colors.red),
+            title: Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ),
+      ],
+      onSelected: (value) {
+        if (value == 'logout') {
+          _showLogoutConfirmationDialog(context);
+        }
+      },
+      child: const CircleAvatar(
+        backgroundColor: AppTheme.primaryColor,
+        child: Icon(
+          Icons.person,
+          color: Colors.white,
         ),
       ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red.withAlpha(26),
-        elevation: 0,
-        minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+    );
+  }
+}
+
+class DashboardContent extends StatelessWidget {
+  const DashboardContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      padding: const EdgeInsets.all(24.0),
+      crossAxisCount: MediaQuery.of(context).size.width > 1200 ? 3 : 2,
+      crossAxisSpacing: 24,
+      mainAxisSpacing: 24,
+      childAspectRatio: 2.0,
+      children: const [
+        DashboardCard(
+          icon: Icons.document_scanner_outlined,
+          title: 'Validate',
+          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
+          color: Color(0xFFFFC107),
         ),
+        DashboardCard(
+          icon: Icons.people_outline,
+          title: 'Customer',
+          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
+          color: Color(0xFFFFC107),
+        ),
+        DashboardCard(
+          icon: Icons.grid_view_outlined,
+          title: 'Services',
+          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
+          color: Color(0xFFFFC107),
+        ),
+        DashboardCard(
+          icon: Icons.security_outlined,
+          title: 'Inspection',
+          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
+          color: Color(0xFFFFC107),
+        ),
+        DashboardCard(
+          icon: Icons.policy_outlined,
+          title: 'Enforcement',
+          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
+           color: Color(0xFFFFC107),
+        ),
+        DashboardCard(
+          icon: Icons.map_outlined,
+          title: 'Maps',
+          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
+          color: Color(0xFFFFC107),
+        ),
+      ],
+    );
+  }
+}
+
+class DashboardCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+
+  const DashboardCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+         boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
-      onPressed: () => _showLogoutConfirmationDialog(context),
-    ),
-  );
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 28, color: Colors.black87),
+          const SizedBox(height: 12),
+          Text(title, style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
+          const SizedBox(height: 8),
+          Expanded(
+            child: Text(
+              subtitle, 
+              style: GoogleFonts.lato(fontSize: 13, color: Colors.black54),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
