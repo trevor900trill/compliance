@@ -386,105 +386,145 @@ class UserProfileIcon extends StatelessWidget {
   }
 }
 
+class DashboardItem {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+
+  DashboardItem({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+  });
+}
+
 class DashboardContent extends StatelessWidget {
   const DashboardContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
+    final List<DashboardItem> items = [
+      DashboardItem(
+        title: 'Validate Document',
+        subtitle: 'Scan document QR code or enter key to verify.',
+        icon: Icons.document_scanner_outlined,
+        color: const Color(0xFF29B6F6), 
+      ),
+      DashboardItem(
+        title: 'Customer Management',
+        subtitle: 'View and manage customer information and history.',
+        icon: Icons.people_outline,
+        color: const Color(0xFF66BB6A),
+      ),
+      DashboardItem(
+        title: 'Services',
+        subtitle: 'Access and manage all available municipal services.',
+        icon: Icons.grid_view_outlined,
+        color: const Color(0xFFFFA726),
+      ),
+      DashboardItem(
+        title: 'Inspection',
+        subtitle: 'Conduct and record on-site inspections and compliance checks.',
+        icon: Icons.security_outlined,
+        color: const Color(0xFFEF5350),
+      ),
+      DashboardItem(
+        title: 'Enforcement',
+        subtitle: 'Issue and track enforcement notices and penalties.',
+        icon: Icons.policy_outlined,
+        color: const Color(0xFFAB47BC),
+      ),
+      DashboardItem(
+        title: 'Maps',
+        subtitle: 'View geographic data and service locations on an interactive map.',
+        icon: Icons.map_outlined,
+        color: const Color(0xFF42A5F5),
+      ),
+    ];
+
+    return GridView.builder(
       padding: const EdgeInsets.all(24.0),
-      crossAxisCount: MediaQuery.of(context).size.width > 1200 ? 3 : 2,
-      crossAxisSpacing: 24,
-      mainAxisSpacing: 24,
-      childAspectRatio: 2.0,
-      children: const [
-        DashboardCard(
-          icon: Icons.document_scanner_outlined,
-          title: 'Validate',
-          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
-          color: Color(0xFFFFC107),
-        ),
-        DashboardCard(
-          icon: Icons.people_outline,
-          title: 'Customer',
-          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
-          color: Color(0xFFFFC107),
-        ),
-        DashboardCard(
-          icon: Icons.grid_view_outlined,
-          title: 'Services',
-          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
-          color: Color(0xFFFFC107),
-        ),
-        DashboardCard(
-          icon: Icons.security_outlined,
-          title: 'Inspection',
-          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
-          color: Color(0xFFFFC107),
-        ),
-        DashboardCard(
-          icon: Icons.policy_outlined,
-          title: 'Enforcement',
-          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
-           color: Color(0xFFFFC107),
-        ),
-        DashboardCard(
-          icon: Icons.map_outlined,
-          title: 'Maps',
-          subtitle: 'Scan the document QR code or key NairobiPay document identifier.',
-          color: Color(0xFFFFC107),
-        ),
-      ],
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 400.0,
+        crossAxisSpacing: 24.0,
+        mainAxisSpacing: 24.0,
+        childAspectRatio: 1.8,
+      ),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        return DashboardCard(item: items[index]);
+      },
     );
   }
 }
 
 class DashboardCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color color;
+  final DashboardItem item;
 
   const DashboardCard({
     super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.color,
+    required this.item,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
-         boxShadow: [
+        gradient: LinearGradient(
+          colors: [item.color.withOpacity(0.8), item.color],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            color: item.color.withOpacity(0.4),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 28, color: Colors.black87),
-          const SizedBox(height: 12),
-          Text(title, style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-          const SizedBox(height: 8),
-          Expanded(
-            child: Text(
-              subtitle, 
-              style: GoogleFonts.lato(fontSize: 13, color: Colors.black54),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 3,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(item.icon, size: 36, color: Colors.white),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.title,
+                      style: GoogleFonts.lato(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      item.subtitle,
+                      style: GoogleFonts.lato(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
