@@ -48,7 +48,16 @@ class HomePageNarrow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Staff Dashboard'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Staff Dashboard'),
+            Text(
+              'For Nairobi County Authorized Staff only',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),
+            ),
+          ],
+        ),
         actions: const [
           UserProfileIcon(),
         ],
@@ -77,12 +86,21 @@ class HomePageWide extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Staff Dashboard',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Staff Dashboard',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'For Nairobi County Authorized Staff only',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                          ),
+                        ],
                       ),
                       const UserProfileIcon(),
                     ],
@@ -186,40 +204,47 @@ class AppDrawer extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top,
-              bottom: 24,
+              top: MediaQuery.of(context).padding.top + 16,
+              bottom: 16,
               left: 24,
               right: 24,
             ),
-            color: AppTheme.primaryColor,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(bottom: BorderSide(color: AppTheme.primaryColor.withAlpha(128), width: 0.5)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 16),
                 const CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white,
+                  radius: 24,
+                  backgroundColor: AppTheme.primaryColor,
                   child: Icon(
-                    Icons.person,
-                    size: 40,
-                    color: AppTheme.primaryColor,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'John Doe',
-                  style: GoogleFonts.lato(
+                    Icons.person_outline,
+                    size: 32,
                     color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  'Staff ID: 1234',
-                  style: GoogleFonts.lato(
-                    color: Colors.white.withAlpha(204),
-                    fontSize: 14,
-                  ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'John Doe',
+                      style: GoogleFonts.lato(
+                        color: AppTheme.primaryColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Staff ID: 1234',
+                      style: GoogleFonts.lato(
+                        color: AppTheme.primaryColor.withAlpha(204),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -308,7 +333,7 @@ Widget _buildNavItem(BuildContext context, {
             ),
             const Spacer(),
             if(isSelected)
-              const Icon(Icons.arrow_forward_ios, size: 14, color: AppTheme.primaryColor)
+              const Icon(Icons.arrow_forward_ios_outlined, size: 14, color: AppTheme.primaryColor)
           ],
         ),
       ),
@@ -356,16 +381,9 @@ class UserProfileIcon extends StatelessWidget {
       offset: const Offset(0, 40),
       itemBuilder: (context) => [
         const PopupMenuItem(
-          value: 'profile',
-          child: ListTile(
-            leading: Icon(Icons.person_outline),
-            title: Text('Profile'),
-          ),
-        ),
-        const PopupMenuItem(
           value: 'logout',
           child: ListTile(
-            leading: Icon(Icons.logout, color: Colors.red),
+            leading: Icon(Icons.logout_outlined, color: Colors.red),
             title: Text('Logout', style: TextStyle(color: Colors.red)),
           ),
         ),
@@ -378,7 +396,7 @@ class UserProfileIcon extends StatelessWidget {
       child: const CircleAvatar(
         backgroundColor: AppTheme.primaryColor,
         child: Icon(
-          Icons.person,
+          Icons.person_outline,
           color: Colors.white,
         ),
       ),
@@ -390,13 +408,11 @@ class DashboardItem {
   final String title;
   final String subtitle;
   final IconData icon;
-  final Color color;
 
   DashboardItem({
     required this.title,
     required this.subtitle,
     required this.icon,
-    required this.color,
   });
 }
 
@@ -408,39 +424,33 @@ class DashboardContent extends StatelessWidget {
     final List<DashboardItem> items = [
       DashboardItem(
         title: 'Validate Document',
-        subtitle: 'Scan document QR code or enter key to verify.',
+        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.document_scanner_outlined,
-        color: const Color(0xFF29B6F6), 
       ),
       DashboardItem(
         title: 'Customer Management',
-        subtitle: 'View and manage customer information and history.',
+        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.people_outline,
-        color: const Color(0xFF66BB6A),
       ),
       DashboardItem(
         title: 'Services',
-        subtitle: 'Access and manage all available municipal services.',
+        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.grid_view_outlined,
-        color: const Color(0xFFFFA726),
       ),
       DashboardItem(
         title: 'Inspection',
-        subtitle: 'Conduct and record on-site inspections and compliance checks.',
+        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.security_outlined,
-        color: const Color(0xFFEF5350),
       ),
       DashboardItem(
         title: 'Enforcement',
-        subtitle: 'Issue and track enforcement notices and penalties.',
+        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.policy_outlined,
-        color: const Color(0xFFAB47BC),
       ),
       DashboardItem(
         title: 'Maps',
-        subtitle: 'View geographic data and service locations on an interactive map.',
+        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.map_outlined,
-        color: const Color(0xFF42A5F5),
       ),
     ];
 
@@ -450,7 +460,7 @@ class DashboardContent extends StatelessWidget {
         maxCrossAxisExtent: 400.0,
         crossAxisSpacing: 24.0,
         mainAxisSpacing: 24.0,
-        childAspectRatio: 1.8,
+        childAspectRatio: 2.2,
       ),
       itemCount: items.length,
       itemBuilder: (context, index) {
@@ -472,19 +482,8 @@ class DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [item.color.withOpacity(0.8), item.color],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: const Color(0xFFfbe116),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: item.color.withOpacity(0.4),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -495,31 +494,29 @@ class DashboardCard extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(item.icon, size: 36, color: Colors.white),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: GoogleFonts.lato(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                Icon(item.icon, size: 32, color: AppTheme.primaryColor),
+                const SizedBox(height: 16),
+                Text(
+                  item.title,
+                  style: GoogleFonts.lato(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryColor,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: Text(
+                    item.subtitle,
+                    style: GoogleFonts.lato(
+                      fontSize: 14,
+                      color: Colors.black,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      item.subtitle,
-                      style: GoogleFonts.lato(
-                        fontSize: 14,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 3,
+                  ),
                 ),
               ],
             ),

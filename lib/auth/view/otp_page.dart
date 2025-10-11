@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myapp/auth/bloc/auth_bloc.dart';
 import 'package:myapp/theme.dart';
@@ -44,6 +45,17 @@ class OtpPage extends StatelessWidget {
                   },
                   child: const Text('VERIFY'),
                 ),
+                const SizedBox(height: 16.0),
+                TextButton.icon(
+                  onPressed: () {
+                    context.read<AuthBloc>().add(NavigateToLogin());
+                  },
+                   icon: const Icon(Icons.arrow_back_ios_new_outlined, size: 16),
+                  label: const Text(
+                    'Back to Login',
+                    style: TextStyle(color: AppTheme.primaryColor),
+                  ),
+                ),
               ],
             ),
           ),
@@ -61,14 +73,14 @@ class OtpInput extends StatefulWidget {
 }
 
 class _OtpInputState extends State<OtpInput> {
-  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
+  final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
   final List<TextEditingController> _controllers =
-      List.generate(6, (index) => TextEditingController());
+      List.generate(4, (index) => TextEditingController());
 
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 3; i++) {
       _controllers[i].addListener(() {
         if (_controllers[i].text.length == 1) {
           _focusNodes[i + 1].requestFocus();
@@ -92,25 +104,30 @@ class _OtpInputState extends State<OtpInput> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(6, (index) {
+      children: List.generate(4, (index) {
         return SizedBox(
           width: 48,
-          height: 48,
+          height: 60,
           child: TextFormField(
             controller: _controllers[index],
             focusNode: _focusNodes[index],
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             maxLength: 1,
+            style: Theme.of(context).textTheme.headlineSmall, 
             decoration: const InputDecoration(
               counterText: '',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8)),
               ),
+              contentPadding: EdgeInsets.zero,
             ),
             onChanged: (value) {
               if (value.isEmpty && index > 0) {
                 _focusNodes[index - 1].requestFocus();
+              } else if (value.isNotEmpty && index < 3) {
+                _focusNodes[index + 1].requestFocus();
               }
             },
           ),

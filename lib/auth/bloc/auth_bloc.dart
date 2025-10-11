@@ -40,5 +40,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthInitial());
       }
     });
+
+    on<NavigateToLogin>((event, emit) {
+      emit(AuthInitial());
+    });
   }
 }

@@ -14,3 +14,5 @@ class OtpVerified extends AuthEvent {}
 class LogoutRequested extends AuthEvent {}
 
 class CheckAuthStatus extends AuthEvent {}
+
+class NavigateToLogin extends AuthEvent {}

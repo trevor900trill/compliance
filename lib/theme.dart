@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF005A34); // Nairobi Green
+  static const Color primaryColor = Color(0xFF26604E); // Nairobi Green
   static const Color accentColor = Color(0xFFFFC107); // Nairobi Gold
   static const Color textColor = Color(0xFF333333); // Dark Gray
   static const Color backgroundColor = Color(0xFFFFFFFF); // White
@@ -30,14 +30,19 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFFF0F0F0),
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: const BorderSide(color: primaryColor),
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: const BorderSide(color: primaryColor, width: 2.0),
         ),
         labelStyle: GoogleFonts.lato(color: textColor.withAlpha(153)),
       ),
