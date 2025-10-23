@@ -38,16 +38,16 @@ This document outlines the design, features, and architecture of the Nairobi Cou
 - **Consistent UI/UX:**
   - A unified design language is applied across all pages, ensuring a consistent user experience.
   - A centralized theme manages colors, fonts, and component styles.
+- **Reusable Custom Stepper:**
+  - A new `CustomStepper` widget was created to provide a modern and intuitive user experience for multi-step forms.
+  - This component includes a progress bar that smoothly animates between steps, clear step titles, and improved navigation.
+  - All pages with step-by-step workflows have been refactored to use this new component, improving code reusability and maintainability.
 
-### Current Plan: Initial Design and Implementation
+## Current Plan: Animate Stepper Progress
 
-- **Objective:** Redesign the application to be professional, responsive, and consistent, suitable for the Nairobi County Government.
+- **Objective:** Enhance the `CustomStepper` widget by adding a smooth animation to the progress bar as the user navigates between steps.
 - **Steps:**
-  1. **Establish Professional Theme:** Create a new theme with a color palette inspired by the Kenyan flag and professional typography.
-  2. **Implement Responsive Layouts:** Ensure all pages adapt to different screen sizes.
-  3. **Redesign Core Pages:**
-      - **Login Page:** Redesign with the new branding, typography, and responsive layout.
-      - **OTP Page:** Update to match the new design and improve user experience.
-      - **Home Page:** Transform into a professional dashboard structure.
-  4. **Update Project Blueprint:** Document the new design system and architectural changes.
-
+    1. **Add AnimationController:** Introduce an `AnimationController` to manage the animation's timing.
+    2. **Implement Animation:** Use a `Tween` to create a smooth transition for the `LinearProgressIndicator` from its previous value to the new value.
+    3. **Update Stepper State:** Modify the `_CustomStepperState` to trigger the animation whenever the step changes.
+    4. **Update Project Blueprint:** Document the new animation feature in the `CustomStepper` component.

@@ -1,62 +1,67 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/auth/bloc/auth_bloc.dart';
 import 'package:myapp/theme.dart';
+import 'package:pinput/pinput.dart';
 
 class OtpPage extends StatelessWidget {
   const OtpPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Enter OTP',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryColor,
-                      ),
-                ),
-                const SizedBox(height: 16.0),
-                Text(
-                  'An OTP has been sent to your registered mobile number.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 32.0),
-                const OtpInput(),
-                const SizedBox(height: 32.0),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(200, 50), 
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          context.go('/home');
+        }
+      },
+      child: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Enter OTP',
+                    style: GoogleFonts.lato(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryColor,
+                    ),
                   ),
-                  onPressed: () {
-                    // In a real app, you'd verify the OTP.
-                    // Here, we'll just simulate a successful verification.
-                    context.read<AuthBloc>().add(OtpVerified());
-                  },
-                  child: const Text('VERIFY'),
-                ),
-                const SizedBox(height: 16.0),
-                TextButton.icon(
-                  onPressed: () {
-                    context.read<AuthBloc>().add(NavigateToLogin());
-                  },
-                   icon: const Icon(Icons.arrow_back_ios_new_outlined, size: 16),
-                  label: const Text(
-                    'Back to Login',
-                    style: TextStyle(color: AppTheme.primaryColor),
+                  const SizedBox(height: 16.0),
+                  Text(
+                    'An OTP has been sent to your registered mobile number.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.lato(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 32.0),
+                  const OtpInput(),
+                  const SizedBox(height: 32.0),
+                  TextButton.icon(
+                    onPressed: () {
+                      context.read<AuthBloc>().add(NavigateToLogin());
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_outlined,
+                      size: 16,
+                      color: AppTheme.primaryColor,
+                    ),
+                    label: const Text(
+                      'Back to Login',
+                      style: TextStyle(color: AppTheme.primaryColor),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -65,74 +70,45 @@ class OtpPage extends StatelessWidget {
   }
 }
 
-class OtpInput extends StatefulWidget {
+class OtpInput extends StatelessWidget {
   const OtpInput({super.key});
 
   @override
-  State<OtpInput> createState() => _OtpInputState();
-}
-
-class _OtpInputState extends State<OtpInput> {
-  final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
-  final List<TextEditingController> _controllers =
-      List.generate(4, (index) => TextEditingController());
-
-  @override
-  void initState() {
-    super.initState();
-    for (int i = 0; i < 3; i++) {
-      _controllers[i].addListener(() {
-        if (_controllers[i].text.length == 1) {
-          _focusNodes[i + 1].requestFocus();
-        }
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(4, (index) {
-        return SizedBox(
-          width: 48,
-          height: 60,
-          child: TextFormField(
-            controller: _controllers[index],
-            focusNode: _focusNodes[index],
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            maxLength: 1,
-            style: Theme.of(context).textTheme.headlineSmall, 
-            decoration: const InputDecoration(
-              counterText: '',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-              ),
-              contentPadding: EdgeInsets.zero,
-            ),
-            onChanged: (value) {
-              if (value.isEmpty && index > 0) {
-                _focusNodes[index - 1].requestFocus();
-              } else if (value.isNotEmpty && index < 3) {
-                _focusNodes[index + 1].requestFocus();
-              }
-            },
-          ),
-        );
-      }),
+    final defaultPinTheme = PinTheme(
+      width: 56,
+      height: 60,
+      textStyle: GoogleFonts.lato(
+        fontSize: 22,
+        color: const Color.fromRGBO(30, 60, 87, 1),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade400),
+      ),
+    );
+
+    final focusedPinTheme = defaultPinTheme.copyWith(
+      decoration: defaultPinTheme.decoration!.copyWith(
+        border: Border.all(color: AppTheme.primaryColor, width: 2),
+      ),
+    );
+
+    final submittedPinTheme = defaultPinTheme.copyWith(
+      decoration: defaultPinTheme.decoration!.copyWith(
+        color: const Color.fromRGBO(243, 246, 249, 1),
+      ),
+    );
+
+    return Pinput(
+      length: 4,
+      defaultPinTheme: defaultPinTheme,
+      focusedPinTheme: focusedPinTheme,
+      submittedPinTheme: submittedPinTheme,
+      pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+      showCursor: false,
+      onCompleted: (pin) => context.read<AuthBloc>().add(OtpVerified()),
     );
   }
 }

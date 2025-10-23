@@ -1,19 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../auth/bloc/auth_bloc.dart';
 import '../../theme.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.child});
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return const ResponsiveLayout(
-      narrowWidget: HomePageNarrow(),
-      wideWidget: HomePageWide(),
+    final location = GoRouterState.of(context).uri.toString();
+    final isSubPage = location != '/home';
+
+    return ResponsiveLayout(
+      wideWidget: HomePageWide(child: child),
+      narrowWidget: HomePageNarrow(
+        isSubPage: isSubPage,
+        title: _getTitleForRoute(location),
+        child: child,
+      ),
     );
+  }
+
+  String _getTitleForRoute(String route) {
+    switch (route) {
+      case '/home/validate_document':
+        return 'Validate Document';
+      case '/home/customer_management':
+        return 'Customer Management';
+      case '/home/services':
+        return 'Services';
+      case '/home/inspection':
+        return 'Inspection';
+      case '/home/enforcement':
+        return 'Enforcement';
+      case '/home/maps':
+        return 'Maps';
+      default:
+        return 'Staff Dashboard';
+    }
   }
 }
 
@@ -42,7 +71,16 @@ class ResponsiveLayout extends StatelessWidget {
 }
 
 class HomePageNarrow extends StatelessWidget {
-  const HomePageNarrow({super.key});
+  final Widget child;
+  final bool isSubPage;
+  final String title;
+
+  const HomePageNarrow({
+    super.key,
+    required this.child,
+    required this.isSubPage,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,25 +89,26 @@ class HomePageNarrow extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Staff Dashboard'),
-            Text(
-              'For Nairobi County Authorized Staff only',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),
-            ),
+            Text(title),
+            if (!isSubPage)
+              Text(
+                'For Nairobi County Authorized Staff only',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),
+              ),
           ],
         ),
-        actions: const [
-          UserProfileIcon(),
-        ],
+        leading: isSubPage ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()) : null,
+        actions: const [UserProfileIcon()],
       ),
-      drawer: const AppDrawer(),
-      body: const DashboardContent(),
+      drawer: isSubPage ? null : const AppDrawer(),
+      body: child,
     );
   }
 }
 
 class HomePageWide extends StatelessWidget {
-  const HomePageWide({super.key});
+  final Widget child;
+  const HomePageWide({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -91,10 +130,7 @@ class HomePageWide extends StatelessWidget {
                         children: [
                           Text(
                             'Staff Dashboard',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           Text(
                             'For Nairobi County Authorized Staff only',
@@ -106,9 +142,7 @@ class HomePageWide extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Expanded(
-                  child: DashboardContent(),
-                ),
+                Expanded(child: child),
               ],
             ),
           ),
@@ -123,73 +157,84 @@ class SideNavigationPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentPath = GoRouterState.of(context).uri.toString();
     return Container(
-        width: 250,
-        decoration: BoxDecoration(
-          color: AppTheme.backgroundColor,
-          border: Border(
-            right: BorderSide(color: Colors.grey[300]!, width: 1),
+      width: 250,
+      decoration: BoxDecoration(
+        color: AppTheme.backgroundColor,
+        border: Border(right: BorderSide(color: Colors.grey[300]!, width: 1)),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'LOGO',
+              style: GoogleFonts.lato(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.primaryColor,
+              ),
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-             Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'LOGO',
-                style: GoogleFonts.lato(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
+          const Divider(height: 1),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+                vertical: 16.0,
+              ),
+              children: [
+                _buildNavItem(
+                  context,
+                  icon: Icons.dashboard_outlined,
+                  title: 'Dashboard',
+                  isSelected: currentPath == '/home',
+                  onTap: () => context.go('/home'),
                 ),
-              ),
+                _buildNavItem(
+                  context,
+                  icon: Icons.document_scanner_outlined,
+                  title: 'Validate Document',
+                  isSelected: currentPath == '/home/validate_document',
+                  onTap: () => context.go('/home/validate_document'),
+                ),
+                _buildNavItem(
+                  context,
+                  icon: Icons.people_outline,
+                  title: 'Customer Management',
+                  isSelected: currentPath == '/home/customer_management',
+                  onTap: () => context.go('/home/customer_management'),
+                ),
+                _buildNavItem(
+                  context,
+                  icon: Icons.grid_view_outlined,
+                  title: 'Services',
+                  isSelected: currentPath == '/home/services',
+                  onTap: () => context.go('/home/services'),
+                ),
+                _buildNavItem(
+                  context,
+                  icon: Icons.security_outlined,
+                  title: 'Inspection',
+                  isSelected: currentPath == '/home/inspection',
+                  onTap: () => context.go('/home/inspection'),
+                ),
+                _buildNavItem(
+                  context,
+                  icon: Icons.policy_outlined,
+                  title: 'Enforcement',
+                  isSelected: currentPath == '/home/enforcement',
+                  onTap: () => context.go('/home/enforcement'),
+                ),
+                _buildNavItem(
+                    context, icon: Icons.map_outlined, title: 'Maps', isSelected: currentPath == '/home/maps', onTap: () => context.go('/home/maps')),
+              ],
             ),
-            const Divider(height: 1),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
-                children: [
-                  _buildNavItem(
-                    context,
-                    icon: Icons.dashboard_outlined,
-                    title: 'Dashboard',
-                    isSelected: true,
-                  ),
-                   _buildNavItem(
-                    context,
-                    icon: Icons.document_scanner_outlined,
-                    title: 'Validate Document',
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.people_outline,
-                    title: 'Customer Management',
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.grid_view_outlined,
-                    title: 'Services',
-                  ),
-                   _buildNavItem(
-                    context,
-                    icon: Icons.security_outlined,
-                    title: 'Inspection',
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.policy_outlined,
-                    title: 'Enforcement',
-                  ),
-                   _buildNavItem(
-                    context,
-                    icon: Icons.map_outlined,
-                    title: 'Maps',
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -198,6 +243,7 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentPath = GoRouterState.of(context).uri.toString();
     return Drawer(
       child: Column(
         children: <Widget>[
@@ -211,7 +257,12 @@ class AppDrawer extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: Colors.white,
-              border: Border(bottom: BorderSide(color: AppTheme.primaryColor.withAlpha(128), width: 0.5)),
+              border: Border(
+                bottom: BorderSide(
+                  color: AppTheme.primaryColor.withAlpha(128),
+                  width: 0.5,
+                ),
+              ),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -258,38 +309,45 @@ class AppDrawer extends StatelessWidget {
                   context,
                   icon: Icons.dashboard_outlined,
                   title: 'Dashboard',
-                  isSelected: true,
+                  isSelected: currentPath == '/home',
+                  onTap: () => context.go('/home'),
                 ),
-                 _buildNavItem(
-                    context,
-                    icon: Icons.document_scanner_outlined,
-                    title: 'Validate Document',
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.people_outline,
-                    title: 'Customer Management',
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.grid_view_outlined,
-                    title: 'Services',
-                  ),
-                   _buildNavItem(
-                    context,
-                    icon: Icons.security_outlined,
-                    title: 'Inspection',
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.policy_outlined,
-                    title: 'Enforcement',
-                  ),
-                   _buildNavItem(
-                    context,
-                    icon: Icons.map_outlined,
-                    title: 'Maps',
-                  ),
+                _buildNavItem(
+                  context,
+                  icon: Icons.document_scanner_outlined,
+                  title: 'Validate Document',
+                  isSelected: currentPath == '/home/validate_document',
+                  onTap: () => context.go('/home/validate_document'),
+                ),
+                _buildNavItem(
+                  context,
+                  icon: Icons.people_outline,
+                  title: 'Customer Management',
+                  isSelected: currentPath == '/home/customer_management',
+                  onTap: () => context.go('/home/customer_management'),
+                ),
+                _buildNavItem(
+                  context,
+                  icon: Icons.grid_view_outlined,
+                  title: 'Services',
+                  isSelected: currentPath == '/home/services',
+                  onTap: () => context.go('/home/services'),
+                ),
+                _buildNavItem(
+                  context,
+                  icon: Icons.security_outlined,
+                  title: 'Inspection',
+                  isSelected: currentPath == '/home/inspection',
+                  onTap: () => context.go('/home/inspection'),
+                ),
+                _buildNavItem(
+                  context,
+                  icon: Icons.policy_outlined,
+                  title: 'Enforcement',
+                  isSelected: currentPath == '/home/enforcement',
+                  onTap: () => context.go('/home/enforcement'),
+                ),
+                _buildNavItem(context, icon: Icons.map_outlined, title: 'Maps', isSelected: currentPath == '/home/maps', onTap: () => context.go('/home/maps')),
               ],
             ),
           ),
@@ -299,7 +357,8 @@ class AppDrawer extends StatelessWidget {
   }
 }
 
-Widget _buildNavItem(BuildContext context, {
+Widget _buildNavItem(
+  BuildContext context, {
   required IconData icon,
   required String title,
   bool isSelected = false,
@@ -307,40 +366,54 @@ Widget _buildNavItem(BuildContext context, {
 }) {
   return Container(
     decoration: BoxDecoration(
-      border: Border(left: BorderSide(color: isSelected ? AppTheme.primaryColor: Colors.transparent, width: 3)),
-    ),
-    child: Material(
-    color: isSelected ? AppTheme.primaryColor.withAlpha(26) : Colors.transparent,
-    child: InkWell(
-      onTap: onTap ?? () => Navigator.pop(context),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? AppTheme.primaryColor : AppTheme.textColor.withAlpha(178),
-              size: 20,
-            ),
-            const SizedBox(width: 16),
-            Text(
-              title,
-              style: GoogleFonts.lato(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? AppTheme.primaryColor : AppTheme.textColor,
-              ),
-            ),
-            const Spacer(),
-            if(isSelected)
-              const Icon(Icons.arrow_forward_ios_outlined, size: 14, color: AppTheme.primaryColor)
-          ],
+      border: Border(
+        left: BorderSide(
+          color: isSelected ? AppTheme.primaryColor : Colors.transparent,
+          width: 3,
         ),
       ),
     ),
-  ), 
+    child: Material(
+      color: isSelected
+          ? AppTheme.primaryColor.withAlpha(26)
+          : Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: isSelected
+                    ? AppTheme.primaryColor
+                    : AppTheme.textColor.withAlpha(178),
+                size: 20,
+              ),
+              const SizedBox(width: 16),
+              Text(
+                title,
+                style: GoogleFonts.lato(
+                  fontSize: 14,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected
+                      ? AppTheme.primaryColor
+                      : AppTheme.textColor,
+                ),
+              ),
+              const Spacer(),
+              if (isSelected)
+                const Icon(
+                  Icons.arrow_forward_ios_outlined,
+                  size: 14,
+                  color: AppTheme.primaryColor,
+                ),
+            ],
+          ),
+        ),
+      ),
+    ),
   );
-  
 }
 
 void _showLogoutConfirmationDialog(BuildContext context) {
@@ -355,7 +428,7 @@ void _showLogoutConfirmationDialog(BuildContext context) {
           TextButton(
             child: const Text('Cancel'),
             onPressed: () {
-              Navigator.of(dialogContext).pop(); 
+              Navigator.of(dialogContext).pop();
             },
           ),
           TextButton(
@@ -379,6 +452,11 @@ class UserProfileIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton(
       offset: const Offset(0, 40),
+      onSelected: (value) {
+        if (value == 'logout') {
+          _showLogoutConfirmationDialog(context);
+        }
+      },
       itemBuilder: (context) => [
         const PopupMenuItem(
           value: 'logout',
@@ -388,17 +466,9 @@ class UserProfileIcon extends StatelessWidget {
           ),
         ),
       ],
-      onSelected: (value) {
-        if (value == 'logout') {
-          _showLogoutConfirmationDialog(context);
-        }
-      },
       child: const CircleAvatar(
         backgroundColor: AppTheme.primaryColor,
-        child: Icon(
-          Icons.person_outline,
-          color: Colors.white,
-        ),
+        child: Icon(Icons.person_outline, color: Colors.white),
       ),
     );
   }
@@ -408,11 +478,13 @@ class DashboardItem {
   final String title;
   final String subtitle;
   final IconData icon;
+  final String route;
 
   DashboardItem({
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.route,
   });
 }
 
@@ -424,44 +496,53 @@ class DashboardContent extends StatelessWidget {
     final List<DashboardItem> items = [
       DashboardItem(
         title: 'Validate Document',
-        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
+        subtitle:
+            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.document_scanner_outlined,
+        route: '/home/validate_document',
       ),
       DashboardItem(
         title: 'Customer Management',
-        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
+        subtitle:
+            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.people_outline,
+        route: '/home/customer_management',
       ),
       DashboardItem(
         title: 'Services',
-        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
+        subtitle:
+            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.grid_view_outlined,
+        route: '/home/services',
       ),
       DashboardItem(
         title: 'Inspection',
-        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
+        subtitle:
+            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.security_outlined,
+        route: '/home/inspection',
       ),
       DashboardItem(
         title: 'Enforcement',
-        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
+        subtitle:
+            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.policy_outlined,
+        route: '/home/enforcement',
       ),
       DashboardItem(
         title: 'Maps',
-        subtitle: 'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
+        subtitle:
+            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.map_outlined,
+        route: '/home/maps',
       ),
     ];
 
-    return GridView.builder(
+    return MasonryGridView.count(
       padding: const EdgeInsets.all(24.0),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 400.0,
-        crossAxisSpacing: 24.0,
-        mainAxisSpacing: 24.0,
-        childAspectRatio: 2.2,
-      ),
+      crossAxisCount: 2,
+      mainAxisSpacing: 24,
+      crossAxisSpacing: 24,
       itemCount: items.length,
       itemBuilder: (context, index) {
         return DashboardCard(item: items[index]);
@@ -473,10 +554,7 @@ class DashboardContent extends StatelessWidget {
 class DashboardCard extends StatelessWidget {
   final DashboardItem item;
 
-  const DashboardCard({
-    super.key,
-    required this.item,
-  });
+  const DashboardCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -488,13 +566,14 @@ class DashboardCard extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: () => context.go(item.route),
           borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(item.icon, size: 32, color: AppTheme.primaryColor),
                 const SizedBox(height: 16),
@@ -507,16 +586,9 @@ class DashboardCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Expanded(
-                  child: Text(
-                    item.subtitle,
-                    style: GoogleFonts.lato(
-                      fontSize: 14,
-                      color: Colors.black,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 3,
-                  ),
+                Text(
+                  item.subtitle,
+                  style: GoogleFonts.lato(fontSize: 14, color: Colors.black),
                 ),
               ],
             ),
