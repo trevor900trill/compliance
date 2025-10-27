@@ -1,34 +1,38 @@
 import 'package:bloc/bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../repository/auth_repository.dart';
+
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SharedPreferences sharedPreferences;
+  final AuthRepository authRepository;
 
-  AuthBloc({required this.sharedPreferences}) : super(AuthInitial()) {
+  AuthBloc({required this.sharedPreferences, required this.authRepository})
+      : super(AuthInitial()) {
     on<LoginRequested>((event, emit) async {
       emit(AuthLoading());
-      // In a real app, you would authenticate with a backend.
-      // For this example, we'll just simulate a successful login.
-      await Future.delayed(
-        const Duration(seconds: 2),
-      ); // Simulate network delay
-      if (event.staffId == '1234' && event.password == 'password') {
-        emit(AuthOtpVerification());
-      } else {
-        emit(AuthFailure(error: 'Invalid credentials'));
+      try {
+        final response = await authRepository.login(event.staffId, event.password, otp: event.otp);
+        if (response.containsKey('token')) {
+          await sharedPreferences.setBool('isLoggedIn', true);
+          await sharedPreferences.setString('token', response['token']);
+          emit(AuthSuccess());
+        } else if (response.containsKey('success') && response['success'] == true) {
+          emit(AuthOtpVerification(staffId: event.staffId, password: event.password));
+        } else {
+          emit(AuthFailure(error: response['message'] ?? 'An unknown error occurred'));
+        }
+      } catch (e) {
+        emit(AuthFailure(error: e.toString()));
       }
-    });
-
-    on<OtpVerified>((event, emit) async {
-      await sharedPreferences.setBool('isLoggedIn', true);
-      emit(AuthSuccess());
     });
 
     on<LogoutRequested>((event, emit) async {
       await sharedPreferences.setBool('isLoggedIn', false);
+      await sharedPreferences.remove('token');
       emit(AuthInitial());
     });
 

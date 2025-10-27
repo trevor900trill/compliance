@@ -27,12 +27,13 @@ class _CustomStepperState extends State<CustomStepper>
   @override
   void initState() {
     super.initState();
-    _progressController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    )..addListener(() {
-      setState(() {});
-    });
+    _progressController =
+        AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 300),
+        )..addListener(() {
+          setState(() {});
+        });
     _updateProgress();
   }
 
@@ -44,15 +45,13 @@ class _CustomStepperState extends State<CustomStepper>
 
   void _updateProgress() {
     final double newProgress = (_currentStep + 1) / widget.steps.length;
-    _progressAnimation = Tween<double>(
-      begin: _progressController.value,
-      end: newProgress,
-    ).animate(
-      CurvedAnimation(
-        parent: _progressController,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _progressAnimation =
+        Tween<double>(
+          begin: _progressController.value,
+          end: newProgress,
+        ).animate(
+          CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
+        );
     _progressController.value = _progressAnimation.value;
     _progressController.forward(from: 0.0);
   }
@@ -135,7 +134,8 @@ class _CustomStepperState extends State<CustomStepper>
                 )
               else
                 const SizedBox(), // To keep the Next button to the right
-              ElevatedButton(
+              ElevatedButton.icon(
+                icon: const Icon(Icons.arrow_forward),
                 onPressed: () {
                   if (_currentStep < widget.steps.length - 1) {
                     setState(() {
@@ -153,15 +153,9 @@ class _CustomStepperState extends State<CustomStepper>
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12.0,
-                    horizontal: 24.0,
-                  ),
-                  child: Text(
-                    _currentStep < widget.steps.length - 1 ? 'Next' : 'Finish',
-                    style: const TextStyle(color: Colors.white),
-                  ),
+                label: Text(
+                  _currentStep < widget.steps.length - 1 ? 'Next' : 'Finish',
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ],

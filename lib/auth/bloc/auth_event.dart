@@ -5,11 +5,10 @@ abstract class AuthEvent {}
 class LoginRequested extends AuthEvent {
   final String staffId;
   final String password;
+  final String? otp;
 
-  LoginRequested({required this.staffId, required this.password});
+  LoginRequested({required this.staffId, required this.password, this.otp});
 }
-
-class OtpVerified extends AuthEvent {}
 
 class LogoutRequested extends AuthEvent {}
 

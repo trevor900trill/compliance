@@ -6,7 +6,12 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
-class AuthOtpVerification extends AuthState {}
+class AuthOtpVerification extends AuthState {
+  final String staffId;
+  final String password;
+
+  AuthOtpVerification({required this.staffId, required this.password});
+}
 
 class AuthSuccess extends AuthState {}
 

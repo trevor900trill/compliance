@@ -8,6 +8,7 @@ class AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final router = createRouter(context);
     return MaterialApp.router(
       title: 'NCG Portal',
       theme: AppTheme.theme,

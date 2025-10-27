@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-import '../../auth/bloc/auth_bloc.dart';
-import '../../theme.dart';
+import '../auth/bloc/auth_bloc.dart';
+import '../theme.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.child});
@@ -194,7 +194,7 @@ class SideNavigationPanel extends StatelessWidget {
                 ),
                 _buildNavItem(
                   context,
-                  icon: Icons.document_scanner_outlined,
+                  icon: Icons.description_outlined,
                   title: 'Validate Document',
                   isSelected: currentPath == '/home/validate_document',
                   onTap: () => context.go('/home/validate_document'),
@@ -314,7 +314,7 @@ class AppDrawer extends StatelessWidget {
                 ),
                 _buildNavItem(
                   context,
-                  icon: Icons.document_scanner_outlined,
+                  icon: Icons.description_outlined,
                   title: 'Validate Document',
                   isSelected: currentPath == '/home/validate_document',
                   onTap: () => context.go('/home/validate_document'),
@@ -497,8 +497,8 @@ class DashboardContent extends StatelessWidget {
       DashboardItem(
         title: 'Validate Document',
         subtitle:
-            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
-        icon: Icons.document_scanner_outlined,
+            'Enter the document number or other identifying information to verify the County-issued document',
+        icon: Icons.description_outlined,
         route: '/home/validate_document',
       ),
       DashboardItem(
@@ -538,9 +538,22 @@ class DashboardContent extends StatelessWidget {
       ),
     ];
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    int crossAxisCount;
+
+    if (screenWidth > 1200) {
+      crossAxisCount = 4;
+    } else if (screenWidth > 900) {
+      crossAxisCount = 3;
+    } else if (screenWidth > 600) {
+      crossAxisCount = 2;
+    } else {
+      crossAxisCount = 1;
+    }
+
     return MasonryGridView.count(
       padding: const EdgeInsets.all(24.0),
-      crossAxisCount: 2,
+      crossAxisCount: crossAxisCount,
       mainAxisSpacing: 24,
       crossAxisSpacing: 24,
       itemCount: items.length,

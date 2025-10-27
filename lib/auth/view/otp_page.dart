@@ -11,10 +11,21 @@ class OtpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.read<AuthBloc>().state as AuthOtpVerification;
+    final staffId = authState.staffId;
+    final password = authState.password;
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          context.go('/home');
+          context.go('/');
+        } else if (state is AuthFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: AppTheme.accentColor,
+            ),
+          );
         }
       },
       child: Scaffold(
@@ -44,7 +55,7 @@ class OtpPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 32.0),
-                  const OtpInput(),
+                  OtpInput(staffId: staffId, password: password),
                   const SizedBox(height: 32.0),
                   TextButton.icon(
                     onPressed: () {
@@ -71,7 +82,9 @@ class OtpPage extends StatelessWidget {
 }
 
 class OtpInput extends StatelessWidget {
-  const OtpInput({super.key});
+  const OtpInput({super.key, required this.staffId, required this.password});
+  final String staffId;
+  final String password;
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +121,7 @@ class OtpInput extends StatelessWidget {
       submittedPinTheme: submittedPinTheme,
       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
       showCursor: false,
-      onCompleted: (pin) => context.read<AuthBloc>().add(OtpVerified()),
+      onCompleted: (pin) => context.read<AuthBloc>().add(LoginRequested(staffId: staffId, password: password, otp: pin)),
     );
   }
 }
