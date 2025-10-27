@@ -1,6 +1,5 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../repository/auth_repository.dart';
 
 part 'auth_event.dart';
@@ -20,7 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await sharedPreferences.setBool('isLoggedIn', true);
           await sharedPreferences.setString('token', response['token']);
           emit(AuthSuccess());
-        } else if (response.containsKey('success') && response['success'] == true) {
+        } else if (response.containsKey('otp_sent') && response['otp_sent'] == true) {
           emit(AuthOtpVerification(staffId: event.staffId, password: event.password));
         } else {
           emit(AuthFailure(error: response['message'] ?? 'An unknown error occurred'));
@@ -37,16 +36,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<CheckAuthStatus>((event, emit) {
-      final isLoggedIn = sharedPreferences.getBool('isLoggedIn') ?? false;
+      final bool isLoggedIn = sharedPreferences.getBool('isLoggedIn') ?? false;
       if (isLoggedIn) {
         emit(AuthSuccess());
       } else {
         emit(AuthInitial());
       }
-    });
-
-    on<NavigateToLogin>((event, emit) {
-      emit(AuthInitial());
     });
   }
 }
