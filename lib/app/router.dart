@@ -42,26 +42,28 @@ GoRouter createRouter(BuildContext context) {
     refreshListenable: GoRouterRefreshStream(authBloc.stream),
     redirect: (BuildContext context, GoRouterState state) {
       final authState = authBloc.state;
-      final location = state.uri.toString();
+      // Using `state.matchedLocation` is more robust as it ignores query parameters.
+      final location = state.matchedLocation;
 
-      final onLoginPage = location == '/';
-      final onOtpPage = location == '/otp';
+      // Define which routes are part of the authentication flow.
+      final isAuthRoute = location == '/' || location == '/otp';
 
-      final loggingIn = onLoginPage || onOtpPage;
-
-      if (authState is AuthInitial) {
-        return onLoginPage ? null : '/';
-      }
-
-      if (authState is AuthOtpVerification) {
-        return onOtpPage ? null : '/otp';
-      }
-
+      // Check the authentication state.
       if (authState is AuthSuccess) {
-        return loggingIn ? '/home' : null;
+        // If the user is authenticated and on an auth route, redirect to home.
+        return isAuthRoute ? '/home' : null;
+      }
+      
+      if (authState is AuthOtpVerification) {
+        // If the user needs to verify OTP, redirect them to the OTP page
+        // unless they are already there.
+        return location == '/otp' ? null : '/otp';
       }
 
-      return null;
+      // For any other state (AuthInitial, AuthLoading, AuthFailure),
+      // if the user is not on an auth route, redirect them to the login page.
+      // This handles logout and initial app load.
+      return isAuthRoute ? null : '/';
     },
     routes: [
       GoRoute(
