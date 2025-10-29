@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 class ApiService {
   // TODO: Move to env and make multi env
   final String _baseUrl = "http://192.168.102.95/uat/nrs";
-  static const bool useMockData = true; // Set to false to use actual API
+  static const bool useMockData = false; // Set to false to use actual API
 
   Future<dynamic> get(String url) async {
     if (useMockData) {
@@ -168,7 +168,10 @@ class ApiService {
           return {'success': false, 'message': 'Invalid OTP'};
         }
       case '/auth/individual/register':
-        return {'success': true, 'message': 'Individual registered successfully'};
+        return {
+          'success': true,
+          'message': 'Individual registered successfully',
+        };
       case '/api/e-verify':
         final documentNumber = body['document_number'];
         if (documentNumber == 'UBP021739') {
@@ -233,7 +236,7 @@ class ApiService {
                     "ubpsubcategory2_name": "Dairy Product Manufacturing ",
                     "ubpsubcategory3_code": "31151",
                     "ubpsubcategory3_name":
-                        "Dairy Product (except Frozen) Manufacturing "
+                        "Dairy Product (except Frozen) Manufacturing ",
                   },
                   {
                     "amount": "50,000",
@@ -254,7 +257,7 @@ class ApiService {
                     "ubpsubcategory2_code": "SF_014",
                     "ubpsubcategory2_name": "",
                     "ubpsubcategory3_code": "SF_0141",
-                    "ubpsubcategory3_name": ""
+                    "ubpsubcategory3_name": "",
                   },
                   {
                     "amount": "2,000",
@@ -275,7 +278,7 @@ class ApiService {
                     "ubpsubcategory2_code": "SF_014",
                     "ubpsubcategory2_name": "",
                     "ubpsubcategory3_code": "SF_0141",
-                    "ubpsubcategory3_name": ""
+                    "ubpsubcategory3_name": "",
                   },
                   {
                     "amount": "30,000",
@@ -296,7 +299,7 @@ class ApiService {
                     "ubpsubcategory2_code": "SF_014",
                     "ubpsubcategory2_name": "",
                     "ubpsubcategory3_code": "SF_0141",
-                    "ubpsubcategory3_name": ""
+                    "ubpsubcategory3_name": "",
                   },
                   {
                     "amount": "35,840",
@@ -317,12 +320,12 @@ class ApiService {
                     "ubpsubcategory2_code": "SF_015",
                     "ubpsubcategory2_name": "ABOVE CANOPY Illuminated",
                     "ubpsubcategory3_code": "SF_0151",
-                    "ubpsubcategory3_name": "ABOVE CANOPY Illuminated"
-                  }
+                    "ubpsubcategory3_name": "ABOVE CANOPY Illuminated",
+                  },
                 ],
                 "nature_of_business": "Registered/Formal",
                 "contact_person_role": "DIRECTOR",
-                "contactperson_email": "waruid@gmail.com"
+                "contactperson_email": "waruid@gmail.com",
               },
               "issue_date": "2024-03-07",
               "expiry_date": "2025-03-06",
@@ -331,10 +334,10 @@ class ApiService {
               "status_comment": null,
               "status_date": null,
               "document_type": 1,
-              "source_register": null
+              "source_register": null,
             },
             "invoices": [],
-            "payments": []
+            "payments": [],
           };
         } else {
           return {
