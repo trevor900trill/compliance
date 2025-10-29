@@ -18,6 +18,7 @@ class ServicesPage extends StatelessWidget {
           return Center(child: Text('Error: ${state.error}'));
         } else if (state is ServicesLoaded) {
           return CustomStepper(
+            pageTitle: 'Services',
             steps: [
               CustomStep(
                 title: 'Select Service',
@@ -80,12 +81,16 @@ class _PaymentStepState extends State<_PaymentStep> {
       onTap: () => setState(() => _paymentMethod = value),
       child: Row(
         children: [
-          Radio<String>(
+          RadioMenuButton(
             value: value,
             groupValue: _paymentMethod,
-            onChanged: null,
+            onChanged: (String? value) {
+              setState(() {
+                _paymentMethod = value!;
+              });
+            },
+            child: Text(title),
           ),
-          Text(title),
         ],
       ),
     );

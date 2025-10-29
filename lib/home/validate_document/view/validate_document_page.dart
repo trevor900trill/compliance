@@ -67,20 +67,12 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
     }
   }
 
-  void _onStepCancel() {
-    if (_currentStep > 0) {
-      setState(() {
-        _currentStep--;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return CustomStepper(
+      pageTitle: 'Validate Document',
       currentStep: _currentStep,
       onStepContinue: _onStepContinue,
-      onStepCancel: _onStepCancel,
       steps: [
         CustomStep(
           title: 'Enter Document Number',

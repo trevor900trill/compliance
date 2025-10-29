@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 
 class ApiService {
   // TODO: Move to env and make multi env
   final String _baseUrl = "http://192.168.102.95/uat/nrs";
-  static const bool useMockData = false; // Set to false to use actual API
+  static const bool useMockData = true; // Set to false to use actual API
 
   Future<dynamic> get(String url) async {
     if (useMockData) {
@@ -160,7 +161,7 @@ class ApiService {
         // Check if it is a 'create' request (will have more than 2 keys)
         if (body.containsKey('type') && body.containsKey('name')) {
           // This is a create customer request
-          print('Mock API: Creating customer...');
+          developer.log('Mock API: Creating customer...');
           return {
             'success': true,
             'message': 'Customer created successfully',

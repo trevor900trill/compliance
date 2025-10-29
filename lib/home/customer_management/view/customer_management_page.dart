@@ -76,9 +76,11 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
         if (_selectedAccountType != null) {
           canProceed = true;
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please select an account type.')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please select an account type.')),
+            );
+          }
         }
         break;
       case 2: // Verify Customer
@@ -91,12 +93,14 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
               _selectedIdType!,
               _verificationIdNumberController.text,
             );
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('A customer with this ID already exists.'),
-                backgroundColor: Colors.red,
-              ),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('A customer with this ID already exists.'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
           } catch (e) {
             canProceed = true;
           }
@@ -123,14 +127,6 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
           _currentStep++;
         });
       }
-    }
-  }
-
-  void _onStepCancel() {
-    if (_currentStep > 0) {
-      setState(() {
-        _currentStep--;
-      });
     }
   }
 
@@ -161,14 +157,18 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
       }
 
       await _repository.createCustomer(customerData);
-      _showConfirmationDialog();
+      if (mounted) {
+        _showConfirmationDialog();
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error creating customer: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error creating customer: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       setState(() {
         _isProcessing = false;
@@ -223,9 +223,9 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
   @override
   Widget build(BuildContext context) {
     return CustomStepper(
+      pageTitle: 'Customer Management',
       currentStep: _currentStep,
       onStepContinue: _onStepContinue,
-      onStepCancel: _onStepCancel,
       onComplete: _onComplete,
       isLoading: _isProcessing,
       steps: [
@@ -256,11 +256,11 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
           style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 24),
-        RadioListTile<String>(
-          title: const Text('Offline Customer Registration'),
+        RadioMenuButton(
           value: 'offline',
           groupValue: 'offline',
           onChanged: (String? value) {},
+          child: const Text('Offline Customer Registration'),
         ),
       ],
     );
@@ -317,7 +317,7 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: _selectedAccountType == value
-              ? Theme.of(context).primaryColor.withOpacity(0.1)
+              ? Theme.of(context).primaryColor.withAlpha(25)
               : Colors.transparent,
           border: Border.all(
             color: _selectedAccountType == value
@@ -329,7 +329,7 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
         ),
         child: Row(
           children: [
-            Radio<String>(
+            Radio(
               value: value,
               groupValue: _selectedAccountType,
               onChanged: (String? val) {
@@ -522,7 +522,8 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
             controller: _organizationTypeController,
             decoration: const InputDecoration(
               labelText: 'Organization Type',
-              border: OutlineInputBorder(),           ),
+              border: OutlineInputBorder(),
+            ),
             validator: (value) => (value?.isEmpty ?? true)
                 ? 'Please enter an organization type'
                 : null,

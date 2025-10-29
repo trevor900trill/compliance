@@ -84,30 +84,26 @@ class HomePageNarrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (isSubPage) {
+      return Scaffold(body: SafeArea(child: child));
+    }
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title),
-            if (!isSubPage)
-              Text(
-                'For Nairobi County Authorized Staff only',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: Colors.white),
-              ),
+            Text(
+              'For Nairobi County Authorized Staff only',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.white),
+            ),
           ],
         ),
-        leading: isSubPage
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => context.pop(),
-              )
-            : null,
         actions: const [UserProfileIcon()],
       ),
-      drawer: isSubPage ? null : const AppDrawer(),
+      drawer: const AppDrawer(),
       body: SafeArea(child: child),
     );
   }
@@ -496,16 +492,10 @@ class UserProfileIcon extends StatelessWidget {
 
 class DashboardItem {
   final String title;
-  final String subtitle;
   final IconData icon;
   final String route;
 
-  DashboardItem({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.route,
-  });
+  DashboardItem({required this.title, required this.icon, required this.route});
 }
 
 class DashboardContent extends StatelessWidget {
@@ -516,43 +506,31 @@ class DashboardContent extends StatelessWidget {
     final List<DashboardItem> items = [
       DashboardItem(
         title: 'Validate Document',
-        subtitle:
-            'Enter the document number or other identifying information to verify the County-issued document',
         icon: Icons.description_outlined,
         route: '/home/validate_document',
       ),
       DashboardItem(
         title: 'Customer Management',
-        subtitle:
-            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.people_outline,
         route: '/home/customer_management',
       ),
       DashboardItem(
         title: 'Services',
-        subtitle:
-            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.grid_view_outlined,
         route: '/home/services',
       ),
       DashboardItem(
         title: 'Inspection',
-        subtitle:
-            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.security_outlined,
         route: '/home/inspection',
       ),
       DashboardItem(
         title: 'Enforcement',
-        subtitle:
-            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.policy_outlined,
         route: '/home/enforcement',
       ),
       DashboardItem(
         title: 'Maps',
-        subtitle:
-            'Scan the document QR code or key NairobiPay document identifier to verify the County issued document',
         icon: Icons.map_outlined,
         route: '/home/maps',
       ),
@@ -568,14 +546,14 @@ class DashboardContent extends StatelessWidget {
     } else if (screenWidth > 600) {
       crossAxisCount = 2;
     } else {
-      crossAxisCount = 1;
+      crossAxisCount = 2;
     }
 
     return MasonryGridView.count(
       padding: const EdgeInsets.all(24.0),
       crossAxisCount: crossAxisCount,
-      mainAxisSpacing: 24,
-      crossAxisSpacing: 24,
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
       itemCount: items.length,
       itemBuilder: (context, index) {
         return DashboardCard(item: items[index]);
@@ -592,8 +570,10 @@ class DashboardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 120,
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: const Color(0xFFfbe116),
+        color: const Color(0xFFE8F5E9), // Light green background
         borderRadius: BorderRadius.circular(16),
       ),
       child: Material(
@@ -601,16 +581,12 @@ class DashboardCard extends StatelessWidget {
         child: InkWell(
           onTap: () => context.go(item.route),
           borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(item.icon, size: 32, color: AppTheme.primaryColor),
-                const SizedBox(height: 16),
-                Text(
+          child: Stack(
+            children: [
+              Positioned(
+                top: 16,
+                left: 16,
+                child: Text(
                   item.title,
                   style: GoogleFonts.lato(
                     fontSize: 18,
@@ -618,13 +594,25 @@ class DashboardCard extends StatelessWidget {
                     color: AppTheme.primaryColor,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  item.subtitle,
-                  style: GoogleFonts.lato(fontSize: 14, color: Colors.black),
+              ),
+              Positioned(
+                bottom: -25,
+                right: -25,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD0E8D0), // Darker green circle
+                    shape: BoxShape.circle,
+                  ),
                 ),
-              ],
-            ),
+              ),
+              Positioned(
+                bottom: 15,
+                right: 30,
+                child: Icon(item.icon, size: 30, color: AppTheme.primaryColor),
+              ),
+            ],
           ),
         ),
       ),

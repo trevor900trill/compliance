@@ -37,6 +37,12 @@ This document outlines the design, features, and architecture of the Nairobi Cou
 - **Consistent UI/UX:**
   - A unified design language is applied across all pages, ensuring a consistent user experience.
   - A centralized theme manages colors, fonts, and component styles.
+- **UI/UX Enhancements:**
+  - **Redesigned Home Page Cards:** The dashboard cards have been redesigned for a cleaner, more modern look, featuring a light green background, circular icons, and improved typography.
+  - **Streamlined Stepper Navigation:** The `CustomStepper` widget has been significantly improved:
+    - The two separate app bars have been merged into a single, unified header that displays the page title and step progress.
+    - Navigation buttons have been redesigned for better clarity and usability, with a styled "Next" button and a "Back to Dashboard" option.
+    - The redundant app bar on sub-pages has been removed to create a less cluttered and more focused user experience.
 - **Reusable Custom Stepper:**
   - A new `CustomStepper` widget was created to provide a modern and intuitive user experience for multi-step forms.
   - This component includes a progress bar that smoothly animates between steps, clear step titles, improved navigation, and a loading state.

@@ -8,6 +8,7 @@ class InspectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomStepper(
+      pageTitle: "Inspection",
       steps: [
         CustomStep(
           title: 'Business Details',

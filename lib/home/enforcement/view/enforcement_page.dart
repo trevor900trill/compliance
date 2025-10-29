@@ -8,6 +8,7 @@ class EnforcementPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomStepper(
+      pageTitle: "Enforcement",
       steps: [
         CustomStep(title: 'Violation Details', content: _buildViolationStep()),
         CustomStep(
