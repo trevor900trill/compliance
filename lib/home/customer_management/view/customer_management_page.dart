@@ -74,8 +74,6 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
         break;
       case 1: // Account Type
         if (_selectedAccountType != null) {
-          // Reset ID type when account type changes
-          _selectedIdType = null;
           canProceed = true;
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -90,7 +88,7 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
           });
           try {
             await _repository.searchCustomer(
-              _selectedIdType!, // The value is now correctly formatted
+              _selectedIdType!,
               _verificationIdNumberController.text,
             );
             ScaffoldMessenger.of(context).showSnackBar(
@@ -309,7 +307,10 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedAccountType = value;
+          if (_selectedAccountType != value) {
+            _selectedAccountType = value;
+            _selectedIdType = null; // Reset the ID type
+          }
         });
       },
       child: Container(
@@ -333,7 +334,10 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
               groupValue: _selectedAccountType,
               onChanged: (String? val) {
                 setState(() {
-                  _selectedAccountType = val;
+                  if (_selectedAccountType != val) {
+                    _selectedAccountType = val;
+                    _selectedIdType = null; // Reset the ID type
+                  }
                 });
               },
             ),
@@ -368,8 +372,8 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
   Widget _buildVerifyCustomerStep() {
     final Map<String, String> currentIdTypes =
         _selectedAccountType == 'individual'
-        ? _individualIdTypes
-        : _organizationIdTypes;
+            ? _individualIdTypes
+            : _organizationIdTypes;
 
     return Form(
       key: _verifyFormKey,
@@ -431,7 +435,7 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     if (_selectedAccountType == 'individual') {
       return _buildIndividualForm();
     } else if (_selectedAccountType == 'organization') {
-      return _buildIndividualForm(); //_buildOrganizationForm();
+      return _buildOrganizationForm();
     } else {
       return const Center(
         child: Text('Please select an account type in the previous step.'),
@@ -492,52 +496,51 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     );
   }
 
-  // Widget _buildOrganizationForm() {
-  //   return Form(
-  //     key: _detailsFormKey,
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           'Enter Organization Details',
-  //           style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold),
-  //         ),
-  //         const SizedBox(height: 24),
-  //         TextFormField(
-  //           controller: _organizationNameController,
-  //           decoration: const InputDecoration(
-  //             labelText: 'Organization Name',
-  //             border: OutlineInputBorder(),
-  //           ),
-  //           validator: (value) => (value?.isEmpty ?? true)
-  //               ? 'Please enter an organization name'
-  //               : null,
-  //         ),
-  //         const SizedBox(height: 16),
-  //         TextFormField(
-  //           controller: _organizationTypeController,
-  //           decoration: const InputDecoration(
-  //             labelText: 'Organization Type',
-  //             border: OutlineInputBorder(),
-  //           ),
-  //           validator: (value) => (value?.isEmpty ?? true)
-  //               ? 'Please enter an organization type'
-  //               : null,
-  //         ),
-  //         const SizedBox(height: 16),
-  //         TextFormField(
-  //           controller: _kraPinController,
-  //           decoration: const InputDecoration(
-  //             labelText: 'KRA PIN',
-  //             border: OutlineInputBorder(),
-  //           ),
-  //           validator: (value) =>
-  //               (value?.isEmpty ?? true) ? 'Please enter a KRA PIN' : null,
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  Widget _buildOrganizationForm() {
+    return Form(
+      key: _detailsFormKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Enter Organization Details',
+            style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 24),
+          TextFormField(
+            controller: _organizationNameController,
+            decoration: const InputDecoration(
+              labelText: 'Organization Name',
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) => (value?.isEmpty ?? true)
+                ? 'Please enter an organization name'
+                : null,
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _organizationTypeController,
+            decoration: const InputDecoration(
+              labelText: 'Organization Type',
+              border: OutlineInputBorder(),           ),
+            validator: (value) => (value?.isEmpty ?? true)
+                ? 'Please enter an organization type'
+                : null,
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _kraPinController,
+            decoration: const InputDecoration(
+              labelText: 'KRA PIN',
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) =>
+                (value?.isEmpty ?? true) ? 'Please enter a KRA PIN' : null,
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildReviewAndConfirmStep() {
     // Helper to find the label from the value

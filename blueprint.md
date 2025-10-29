@@ -47,6 +47,7 @@ This document outlines the design, features, and architecture of the Nairobi Cou
   - **Customer Verification:** A verification step checks if a customer already exists before proceeding.
   - **Customer Creation:** If a customer does not exist, their details are collected and submitted to the backend to create a new account upon completion of the form.
   - **Dynamic ID Types:** The ID type dropdown in the verification step is now dynamically populated based on the selected account type (Individual or Organization), ensuring only relevant options are shown.
+  - **State Management Bug Fix:** Fixed a crash that occurred when changing the account type after an ID type had already been selected. The selected ID type is now correctly reset.
 - **UI Overflow Fix:**
     - The "Account Type" selection step in the customer registration form has been made scrollable to prevent UI overflow on smaller screens.
 
