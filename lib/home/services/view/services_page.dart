@@ -23,14 +23,8 @@ class ServicesPage extends StatelessWidget {
                 title: 'Select Service',
                 content: _buildServiceSelectionStep(state.services),
               ),
-              CustomStep(
-                title: 'Fill Details',
-                content: _buildDetailsStep(),
-              ),
-              CustomStep(
-                title: 'Payment',
-                content: const _PaymentStep(),
-              ),
+              CustomStep(title: 'Fill Details', content: _buildDetailsStep()),
+              CustomStep(title: 'Payment', content: const _PaymentStep()),
             ],
             onComplete: () {
               // Handle completion

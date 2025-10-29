@@ -9,18 +9,12 @@ class EnforcementPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomStepper(
       steps: [
-        CustomStep(
-          title: 'Violation Details',
-          content: _buildViolationStep(),
-        ),
+        CustomStep(title: 'Violation Details', content: _buildViolationStep()),
         CustomStep(
           title: 'Offender Information',
           content: _buildOffenderStep(),
         ),
-        CustomStep(
-          title: 'Review & Issue Notice',
-          content: _buildReviewStep(),
-        ),
+        CustomStep(title: 'Review & Issue Notice', content: _buildReviewStep()),
       ],
       onComplete: () {
         // Handle completion
@@ -33,9 +27,18 @@ class EnforcementPage extends StatelessWidget {
       children: [
         DropdownButtonFormField(
           items: const [
-            DropdownMenuItem(value: 'Illegal Parking', child: Text('Illegal Parking')),
-            DropdownMenuItem(value: 'Unlicensed Business', child: Text('Unlicensed Business')),
-            DropdownMenuItem(value: 'Noise Pollution', child: Text('Noise Pollution')),
+            DropdownMenuItem(
+              value: 'Illegal Parking',
+              child: Text('Illegal Parking'),
+            ),
+            DropdownMenuItem(
+              value: 'Unlicensed Business',
+              child: Text('Unlicensed Business'),
+            ),
+            DropdownMenuItem(
+              value: 'Noise Pollution',
+              child: Text('Noise Pollution'),
+            ),
           ],
           onChanged: (value) {},
           decoration: const InputDecoration(labelText: 'Type of Violation'),
@@ -55,13 +58,9 @@ class EnforcementPage extends StatelessWidget {
   Widget _buildOffenderStep() {
     return Column(
       children: const [
-        TextField(
-          decoration: InputDecoration(labelText: 'Offender Name'),
-        ),
+        TextField(decoration: InputDecoration(labelText: 'Offender Name')),
         SizedBox(height: 16),
-        TextField(
-          decoration: InputDecoration(labelText: 'ID Number'),
-        ),
+        TextField(decoration: InputDecoration(labelText: 'ID Number')),
       ],
     );
   }
@@ -70,7 +69,10 @@ class EnforcementPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Review the notice details before issuing.', style: GoogleFonts.lato(fontSize: 16)),
+        Text(
+          'Review the notice details before issuing.',
+          style: GoogleFonts.lato(fontSize: 16),
+        ),
         const SizedBox(height: 24),
         _buildReviewRow('Violation:', 'Illegal Parking'),
         _buildReviewRow('Offender:', 'Jane Doe'),

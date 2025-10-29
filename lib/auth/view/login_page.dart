@@ -132,10 +132,12 @@ class _LoginFormState extends State<LoginForm> {
               onPressed: state is AuthLoading
                   ? null
                   : () {
-                      context.read<AuthBloc>().add(LoginRequested(
-                            staffId: _staffIdController.text,
-                            password: _passwordController.text,
-                          ));
+                      context.read<AuthBloc>().add(
+                        LoginRequested(
+                          staffId: _staffIdController.text,
+                          password: _passwordController.text,
+                        ),
+                      );
                     },
               child: state is AuthLoading
                   ? const SizedBox(

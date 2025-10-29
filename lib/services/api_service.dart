@@ -37,7 +37,7 @@ class ApiService {
       body: jsonEncode(body),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to POST to $url');
@@ -121,10 +121,10 @@ class ApiService {
     await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
     switch (url) {
       case '/adminauth/auth/login':
-        final staffId = body['staffId'];
+        final username = body['username'];
         final password = body['password'];
-        if (staffId == 'test' && password == 'password') {
-          return {'success': true, 'message': 'OTP sent successfully'};
+        if (username == 'test' && password == 'password') {
+          return {'success': true, 'token': 'mock-jwt-token-string'};
         } else {
           return {'success': false, 'message': 'Invalid credentials'};
         }
@@ -134,6 +134,54 @@ class ApiService {
           return {'success': true, 'token': 'mock-jwt-token-string'};
         } else {
           return {'success': false, 'message': 'Invalid OTP'};
+        }
+      case '/api/e-verify':
+        final documentNumber = body['document_number'];
+        if (documentNumber == '12345') {
+          return {
+            'valid': true,
+            'message': 'Document has been verified successfully',
+            'data': {
+              "document_number": "12345",
+              "document_type": "Appraisal",
+              "status": "verified",
+              "date_verified": "2024-07-31T12:00:00Z",
+              "verifier": "John Doe",
+            },
+          };
+        } else {
+          return {
+            'valid': false,
+            'message': 'Document could not be verified',
+            'data': {},
+          };
+        }
+      case '/api/accounts':
+        // Check if it is a 'create' request (will have more than 2 keys)
+        if (body.containsKey('type') && body.containsKey('name')) {
+          // This is a create customer request
+          print('Mock API: Creating customer...');
+          return {
+            'success': true,
+            'message': 'Customer created successfully',
+            'data': body, // Echo back the data for confirmation
+          };
+        } else {
+          // This is a search customer request
+          final idNumber = body['id_number'];
+          if (idNumber == '12345678') {
+            return {
+              'success': true,
+              'data': {
+                'name': 'John Doe',
+                'phone_number': '123-456-7890',
+                'email': 'john.doe@example.com',
+              },
+            };
+          } else {
+            // Simulate customer not found for any other ID
+            throw Exception('Customer not found');
+          }
         }
       default:
         throw Exception('Mock POST handler not implemented for $url');

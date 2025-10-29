@@ -22,8 +22,8 @@ class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
     _subscription = stream.asBroadcastStream().listen(
-          (dynamic _) => notifyListeners(),
-        );
+      (dynamic _) => notifyListeners(),
+    );
   }
 
   late final StreamSubscription<dynamic> _subscription;
@@ -53,7 +53,7 @@ GoRouter createRouter(BuildContext context) {
         // If the user is authenticated and on an auth route, redirect to home.
         return isAuthRoute ? '/home' : null;
       }
-      
+
       if (authState is AuthOtpVerification) {
         // If the user needs to verify OTP, redirect them to the OTP page
         // unless they are already there.
@@ -66,14 +66,8 @@ GoRouter createRouter(BuildContext context) {
       return isAuthRoute ? null : '/';
     },
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const LoginPage(),
-      ),
-      GoRoute(
-        path: '/otp',
-        builder: (context, state) => const OtpPage(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const LoginPage()),
+      GoRoute(path: '/otp', builder: (context, state) => const OtpPage()),
       ShellRoute(
         builder: (context, state, child) {
           return HomePage(child: child);
@@ -97,9 +91,9 @@ GoRouter createRouter(BuildContext context) {
                   return RepositoryProvider(
                     create: (context) => ServicesRepository(),
                     child: BlocProvider(
-                      create: (context) => ServicesBloc(
-                        context.read<ServicesRepository>(),
-                      )..add(FetchServices()),
+                      create: (context) =>
+                          ServicesBloc(context.read<ServicesRepository>())
+                            ..add(FetchServices()),
                       child: const ServicesPage(),
                     ),
                   );

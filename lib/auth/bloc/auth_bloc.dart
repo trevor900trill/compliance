@@ -10,19 +10,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
 
   AuthBloc({required this.sharedPreferences, required this.authRepository})
-      : super(AuthInitial()) {
+    : super(AuthInitial()) {
     on<LoginRequested>((event, emit) async {
       emit(AuthLoading());
       try {
-        final response = await authRepository.login(event.staffId, event.password, otp: event.otp);
+        final response = await authRepository.login(
+          event.staffId,
+          event.password,
+          otp: event.otp,
+        );
         if (response.containsKey('token')) {
           await sharedPreferences.setBool('isLoggedIn', true);
           await sharedPreferences.setString('token', response['token']);
           emit(AuthSuccess());
-        } else if (response.containsKey('otp_sent') && response['otp_sent'] == true) {
-          emit(AuthOtpVerification(staffId: event.staffId, password: event.password));
+        } else if (response.containsKey('otp_sent') &&
+            response['otp_sent'] == true) {
+          emit(
+            AuthOtpVerification(
+              staffId: event.staffId,
+              password: event.password,
+            ),
+          );
         } else {
-          emit(AuthFailure(error: response['message'] ?? 'An unknown error occurred'));
+          emit(
+            AuthFailure(
+              error: response['message'] ?? 'An unknown error occurred',
+            ),
+          );
         }
       } catch (e) {
         emit(AuthFailure(error: e.toString()));

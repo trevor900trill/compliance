@@ -17,10 +17,7 @@ class InspectionPage extends StatelessWidget {
           title: 'Inspection Checklist',
           content: _buildChecklistStep(),
         ),
-        CustomStep(
-          title: 'Summary & Signature',
-          content: _buildSummaryStep(),
-        ),
+        CustomStep(title: 'Summary & Signature', content: _buildSummaryStep()),
       ],
       onComplete: () {
         // Handle completion
@@ -31,9 +28,7 @@ class InspectionPage extends StatelessWidget {
   Widget _buildBusinessDetailsStep() {
     return Column(
       children: const [
-        TextField(
-          decoration: InputDecoration(labelText: 'Business Number'),
-        ),
+        TextField(decoration: InputDecoration(labelText: 'Business Number')),
         SizedBox(height: 16),
         TextField(
           decoration: InputDecoration(labelText: 'Business Name'),
@@ -74,7 +69,10 @@ class InspectionPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Summary of inspection findings.', style: GoogleFonts.lato(fontSize: 16)),
+        Text(
+          'Summary of inspection findings.',
+          style: GoogleFonts.lato(fontSize: 16),
+        ),
         const SizedBox(height: 24),
         const TextField(
           decoration: InputDecoration(
@@ -89,11 +87,9 @@ class InspectionPage extends StatelessWidget {
         Container(
           height: 100,
           width: double.infinity,
-          decoration: BoxDecoration(
-            border: Border.all(),
-          ),
+          decoration: BoxDecoration(border: Border.all()),
           child: const Center(child: Text('Sign Here')),
-        )
+        ),
       ],
     );
   }

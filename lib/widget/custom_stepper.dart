@@ -11,8 +11,20 @@ class CustomStep {
 class CustomStepper extends StatefulWidget {
   final List<CustomStep> steps;
   final VoidCallback? onComplete;
+  final int currentStep;
+  final VoidCallback? onStepContinue;
+  final VoidCallback? onStepCancel;
+  final bool isLoading;
 
-  const CustomStepper({super.key, required this.steps, this.onComplete});
+  const CustomStepper({
+    super.key,
+    required this.steps,
+    this.onComplete,
+    this.currentStep = 0,
+    this.onStepContinue,
+    this.onStepCancel,
+    this.isLoading = false,
+  });
 
   @override
   State<CustomStepper> createState() => _CustomStepperState();
@@ -20,21 +32,27 @@ class CustomStepper extends StatefulWidget {
 
 class _CustomStepperState extends State<CustomStepper>
     with SingleTickerProviderStateMixin {
-  int _currentStep = 0;
   late AnimationController _progressController;
   late Animation<double> _progressAnimation;
 
   @override
   void initState() {
     super.initState();
-    _progressController =
-        AnimationController(
-          vsync: this,
-          duration: const Duration(milliseconds: 300),
-        )..addListener(() {
-          setState(() {});
-        });
+    _progressController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    )..addListener(() {
+        setState(() {});
+      });
     _updateProgress();
+  }
+
+  @override
+  void didUpdateWidget(CustomStepper oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentStep != oldWidget.currentStep) {
+      _updateProgress();
+    }
   }
 
   @override
@@ -44,14 +62,13 @@ class _CustomStepperState extends State<CustomStepper>
   }
 
   void _updateProgress() {
-    final double newProgress = (_currentStep + 1) / widget.steps.length;
-    _progressAnimation =
-        Tween<double>(
-          begin: _progressController.value,
-          end: newProgress,
-        ).animate(
-          CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
-        );
+    final double targetProgress = (widget.currentStep + 1) / widget.steps.length;
+    _progressAnimation = Tween<double>(
+      begin: _progressController.value,
+      end: targetProgress,
+    ).animate(
+      CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
+    );
     _progressController.value = _progressAnimation.value;
     _progressController.forward(from: 0.0);
   }
@@ -70,7 +87,7 @@ class _CustomStepperState extends State<CustomStepper>
                 CircleAvatar(
                   backgroundColor: AppTheme.primaryColor,
                   child: Text(
-                    '${_currentStep + 1}',
+                    '${widget.currentStep + 1}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -82,11 +99,11 @@ class _CustomStepperState extends State<CustomStepper>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'STEP ${_currentStep + 1}/${widget.steps.length}',
+                      'STEP ${widget.currentStep + 1}/${widget.steps.length}',
                       style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     Text(
-                      widget.steps[_currentStep].title,
+                      widget.steps[widget.currentStep].title,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -110,7 +127,7 @@ class _CustomStepperState extends State<CustomStepper>
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: widget.steps[_currentStep].content,
+        child: widget.steps[widget.currentStep].content,
       ),
       bottomNavigationBar: BottomAppBar(
         child: Padding(
@@ -118,14 +135,9 @@ class _CustomStepperState extends State<CustomStepper>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (_currentStep > 0)
+              if (widget.currentStep > 0)
                 TextButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _currentStep--;
-                      _updateProgress();
-                    });
-                  },
+                  onPressed: widget.isLoading ? null : widget.onStepCancel,
                   icon: const Icon(Icons.arrow_back),
                   label: const Text('Previous'),
                   style: TextButton.styleFrom(
@@ -133,19 +145,20 @@ class _CustomStepperState extends State<CustomStepper>
                   ),
                 )
               else
-                const SizedBox(), // To keep the Next button to the right
+                const SizedBox(),
               ElevatedButton.icon(
-                icon: const Icon(Icons.arrow_forward),
-                onPressed: () {
-                  if (_currentStep < widget.steps.length - 1) {
-                    setState(() {
-                      _currentStep++;
-                      _updateProgress();
-                    });
-                  } else {
-                    widget.onComplete?.call();
-                  }
-                },
+                icon: widget.isLoading
+                    ? Container(
+                        width: 24,
+                        height: 24,
+                        padding: const EdgeInsets.all(2.0),
+                        child: const CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                        ),
+                      )
+                    : const Icon(Icons.arrow_forward),
+                onPressed: widget.isLoading ? null : widget.onStepContinue,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryColor,
                   foregroundColor: Colors.white,
@@ -154,7 +167,7 @@ class _CustomStepperState extends State<CustomStepper>
                   ),
                 ),
                 label: Text(
-                  _currentStep < widget.steps.length - 1 ? 'Next' : 'Finish',
+                  widget.currentStep < widget.steps.length - 1 ? 'Next' : 'Finish',
                   style: const TextStyle(color: Colors.white),
                 ),
               ),

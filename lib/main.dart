@@ -9,10 +9,12 @@ import 'auth/repository/auth_repository.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final sharedPreferences = await SharedPreferences.getInstance();
-  runApp(MyApp(
-    sharedPreferences: sharedPreferences,
-    authRepository: AuthRepository(),
-  ));
+  runApp(
+    MyApp(
+      sharedPreferences: sharedPreferences,
+      authRepository: AuthRepository(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

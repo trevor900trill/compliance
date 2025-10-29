@@ -1,29 +1,117 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/widget/custom_stepper.dart';
+import '../repository/validate_document_repository.dart';
 
-class ValidateDocumentPage extends StatelessWidget {
+class ValidateDocumentPage extends StatefulWidget {
   const ValidateDocumentPage({super.key});
+
+  @override
+  State<ValidateDocumentPage> createState() => _ValidateDocumentPageState();
+}
+
+class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _documentNumberController = TextEditingController();
+  final ValidateDocumentRepository _repository = ValidateDocumentRepository();
+  Map<String, dynamic>? _verificationResult;
+  bool _isLoading = false;
+  int _currentStep = 0;
+
+  Future<void> _verifyDocument() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+        _verificationResult = null;
+        _currentStep = 1; // Move to verification step
+      });
+
+      try {
+        final result =
+            await _repository.validateDocument(_documentNumberController.text);
+        setState(() {
+          _verificationResult = result;
+        });
+      } catch (e) {
+        setState(() {
+          _verificationResult = {
+            'valid': false,
+            'message': 'Error: ${e.toString()}',
+            'data': {}
+          };
+        });
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _onStepContinue() {
+    if (_currentStep == 0) {
+      _verifyDocument();
+    } else if (_currentStep == 1 &&
+        _verificationResult != null &&
+        _verificationResult!['valid'] == true) {
+      setState(() {
+        _currentStep = 2; // Move to details step
+      });
+    } else {
+      // Reset or handle completion
+      setState(() {
+        _currentStep = 0;
+        _documentNumberController.clear();
+        _verificationResult = null;
+      });
+    }
+  }
+
+  void _onStepCancel() {
+    if (_currentStep > 0) {
+      setState(() {
+        _currentStep--;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return CustomStepper(
+      currentStep: _currentStep,
+      onStepContinue: _onStepContinue,
+      onStepCancel: _onStepCancel,
       steps: [
-        CustomStep(title: 'Enter Details', content: _buildEnterDetailsStep()),
-        CustomStep(title: 'Verify', content: _buildVerifyStep()),
-        CustomStep(title: 'Details', content: _buildDetailsStep()),
+        CustomStep(
+          title: 'Enter Document Number',
+          content: _buildEnterDetailsStep(),
+        ),
+        CustomStep(
+          title: 'Verification',
+          content: _buildVerifyStep(),
+        ),
+        CustomStep(
+          title: 'Details',
+          content: _buildDetailsStep(),
+        ),
       ],
       onComplete: () {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Validation Complete!')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Validation Process Finished!')));
+        setState(() {
+          _currentStep = 0;
+          _documentNumberController.clear();
+          _verificationResult = null;
+        });
       },
     );
   }
 
   Widget _buildEnterDetailsStep() {
     return Form(
+      key: _formKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Enter Document Information',
@@ -31,28 +119,16 @@ class ValidateDocumentPage extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           TextFormField(
+            controller: _documentNumberController,
             decoration: const InputDecoration(
-              labelText: 'Document ID',
+              labelText: 'Document Number',
+              hintText: 'Enter document number',
               border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.description_outlined),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter a Document ID';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Owner ID Number',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.person_outline),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter an Owner ID Number';
+                return 'Please enter a Document Number';
               }
               return null;
             },
@@ -63,22 +139,47 @@ class ValidateDocumentPage extends StatelessWidget {
   }
 
   Widget _buildVerifyStep() {
+    if (_isLoading) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Verifying Document...'),
+          ],
+        ),
+      );
+    }
+
+    if (_verificationResult == null) {
+      // This state should ideally not be seen if logic is correct
+      return const Center(child: Text('Waiting to verify...'));
+    }
+
+    final bool isValid = _verificationResult!['valid'] ?? false;
+    final String message =
+        _verificationResult!['message'] ?? 'An unknown error occurred.';
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'Verification Status',
-            style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
+          Icon(
+            isValid ? Icons.check_circle_outline : Icons.highlight_off,
+            color: isValid ? Colors.green : Colors.red,
+            size: 80,
           ),
-          const SizedBox(height: 32),
-          const Icon(Icons.check_circle, color: Colors.green, size: 80),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(
-            'Document Verified Successfully!',
-            style: GoogleFonts.lato(fontSize: 16, color: Colors.green),
+            message,
+            style: GoogleFonts.lato(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isValid ? Colors.green : Colors.red,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -86,19 +187,27 @@ class ValidateDocumentPage extends StatelessWidget {
   }
 
   Widget _buildDetailsStep() {
+    if (_verificationResult == null || _verificationResult!['valid'] != true) {
+      return const Center(
+        child: Text('No details to display.'),
+      );
+    }
+
+    final data = _verificationResult!['data'];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Document Details',
+          'Verified Document Details',
           style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 24),
-        _buildDetailRow('Document ID:', '123456789'),
-        _buildDetailRow('Owner Name:', 'John Doe'),
-        _buildDetailRow('Issue Date:', '01/01/2023'),
-        _buildDetailRow('Expiry Date:', '01/01/2024'),
-        _buildDetailRow('Status:', 'Active'),
+        _buildDetailRow('Document Number:', data['document_number'] ?? 'N/A'),
+        _buildDetailRow('Document Type:', data['document_type'] ?? 'N/A'),
+        _buildDetailRow('Status:', data['status'] ?? 'N/A'),
+        _buildDetailRow('Date Verified:', data['date_verified'] ?? 'N/A'),
+        _buildDetailRow('Verifier:', data['verifier'] ?? 'N/A'),
       ],
     );
   }
@@ -107,10 +216,17 @@ class ValidateDocumentPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
-          Text(value, style: GoogleFonts.lato()),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              value,
+              style: GoogleFonts.lato(),
+              textAlign: TextAlign.end,
+            ),
+          ),
         ],
       ),
     );

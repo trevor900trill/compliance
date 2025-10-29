@@ -1,4 +1,3 @@
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myapp/auth/repository/auth_repository.dart';
 import 'package:myapp/main.dart';
@@ -12,10 +11,12 @@ void main() {
     // Build our app and trigger a frame.
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
-    await tester.pumpWidget(MyApp(
-      sharedPreferences: sharedPreferences,
-      authRepository: MockAuthRepository(),
-    ));
+    await tester.pumpWidget(
+      MyApp(
+        sharedPreferences: sharedPreferences,
+        authRepository: MockAuthRepository(),
+      ),
+    );
 
     // Verify that the login page is displayed.
     expect(find.text('Welcome Back'), findsOneWidget);

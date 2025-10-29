@@ -1,4 +1,3 @@
-
 # Nairobi County Government Staff Portal - Blueprint
 
 ## Overview
@@ -40,14 +39,18 @@ This document outlines the design, features, and architecture of the Nairobi Cou
   - A centralized theme manages colors, fonts, and component styles.
 - **Reusable Custom Stepper:**
   - A new `CustomStepper` widget was created to provide a modern and intuitive user experience for multi-step forms.
-  - This component includes a progress bar that smoothly animates between steps, clear step titles, and improved navigation.
-  - All pages with step-by-step workflows have been refactored to use this new component, improving code reusability and maintainability.
+  - This component includes a progress bar that smoothly animates between steps, clear step titles, improved navigation, and a loading state.
+- **Customer Management:**
+  - A multi-step form for registering new customers, with options for both individual and organization accounts.
+  - The form includes a review and confirm step, allowing users to verify all information before submission.
+  - The form includes validation to ensure that all required fields are filled out correctly.
+  - **Customer Verification:** A verification step checks if a customer already exists before proceeding.
+  - **Customer Creation:** If a customer does not exist, their details are collected and submitted to the backend to create a new account upon completion of the form.
+  - **Dynamic ID Types:** The ID type dropdown in the verification step is now dynamically populated based on the selected account type (Individual or Organization), ensuring only relevant options are shown.
+- **UI Overflow Fix:**
+    - The "Account Type" selection step in the customer registration form has been made scrollable to prevent UI overflow on smaller screens.
 
-## Current Plan: Animate Stepper Progress
 
-- **Objective:** Enhance the `CustomStepper` widget by adding a smooth animation to the progress bar as the user navigates between steps.
-- **Steps:**
-    1. **Add AnimationController:** Introduce an `AnimationController` to manage the animation's timing.
-    2. **Implement Animation:** Use a `Tween` to create a smooth transition for the `LinearProgressIndicator` from its previous value to the new value.
-    3. **Update Stepper State:** Modify the `_CustomStepperState` to trigger the animation whenever the step changes.
-    4. **Update Project Blueprint:** Document the new animation feature in the `CustomStepper` component.
+## Current Plan
+
+All requested features and fixes have been implemented. The application is in a stable state. Awaiting next user request.

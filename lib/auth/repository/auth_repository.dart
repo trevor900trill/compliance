@@ -5,7 +5,11 @@ import '../../services/api_service.dart';
 class AuthRepository {
   final ApiService _apiService = ApiService();
 
-  Future<Map<String, dynamic>> login(String staffId, String password, {String? otp}) async {
+  Future<Map<String, dynamic>> login(
+    String staffId,
+    String password, {
+    String? otp,
+  }) async {
     try {
       final body = {
         'username': staffId,

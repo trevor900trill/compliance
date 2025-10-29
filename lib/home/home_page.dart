@@ -93,15 +93,22 @@ class HomePageNarrow extends StatelessWidget {
             if (!isSubPage)
               Text(
                 'For Nairobi County Authorized Staff only',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.white),
               ),
           ],
         ),
-        leading: isSubPage ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()) : null,
+        leading: isSubPage
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.pop(),
+              )
+            : null,
         actions: const [UserProfileIcon()],
       ),
       drawer: isSubPage ? null : const AppDrawer(),
-      body: child,
+      body: SafeArea(child: child),
     );
   }
 }
@@ -130,11 +137,13 @@ class HomePageWide extends StatelessWidget {
                         children: [
                           Text(
                             'Staff Dashboard',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           Text(
                             'For Nairobi County Authorized Staff only',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.white),
                           ),
                         ],
                       ),
@@ -228,7 +237,12 @@ class SideNavigationPanel extends StatelessWidget {
                   onTap: () => context.go('/home/enforcement'),
                 ),
                 _buildNavItem(
-                    context, icon: Icons.map_outlined, title: 'Maps', isSelected: currentPath == '/home/maps', onTap: () => context.go('/home/maps')),
+                  context,
+                  icon: Icons.map_outlined,
+                  title: 'Maps',
+                  isSelected: currentPath == '/home/maps',
+                  onTap: () => context.go('/home/maps'),
+                ),
               ],
             ),
           ),
@@ -347,7 +361,13 @@ class AppDrawer extends StatelessWidget {
                   isSelected: currentPath == '/home/enforcement',
                   onTap: () => context.go('/home/enforcement'),
                 ),
-                _buildNavItem(context, icon: Icons.map_outlined, title: 'Maps', isSelected: currentPath == '/home/maps', onTap: () => context.go('/home/maps')),
+                _buildNavItem(
+                  context,
+                  icon: Icons.map_outlined,
+                  title: 'Maps',
+                  isSelected: currentPath == '/home/maps',
+                  onTap: () => context.go('/home/maps'),
+                ),
               ],
             ),
           ),

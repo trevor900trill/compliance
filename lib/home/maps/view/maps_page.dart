@@ -15,10 +15,7 @@ class _MapsPageState extends State<MapsPage> {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: _nairobi,
-          zoom: 11,
-        ),
+        initialCameraPosition: CameraPosition(target: _nairobi, zoom: 11),
       ),
     );
   }

@@ -121,7 +121,9 @@ class OtpInput extends StatelessWidget {
       submittedPinTheme: submittedPinTheme,
       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
       showCursor: false,
-      onCompleted: (pin) => context.read<AuthBloc>().add(LoginRequested(staffId: staffId, password: password, otp: pin)),
+      onCompleted: (pin) => context.read<AuthBloc>().add(
+        LoginRequested(staffId: staffId, password: password, otp: pin),
+      ),
     );
   }
 }
