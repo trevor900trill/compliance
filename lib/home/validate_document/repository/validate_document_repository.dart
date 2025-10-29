@@ -5,7 +5,7 @@ class ValidateDocumentRepository {
 
   Future<Map<String, dynamic>> validateDocument(String documentNumber) async {
     try {
-      final response = await _apiService.post('/api/e-verify', {
+      final response = await _apiService.post('/documents/api/search/', {
         'document_number': documentNumber,
         'document_type': 'Appraisal',
       });

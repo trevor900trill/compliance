@@ -44,11 +44,9 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     'National ID': 'national_id',
     'Passport': 'passport',
     'Alien ID': 'alien_id',
-    'KRA PIN': 'kra_pin',
   };
 
   final Map<String, String> _organizationIdTypes = {
-    'Company Registration Number': 'company_reg_no',
     'KRA PIN': 'kra_pin',
   };
 
@@ -89,10 +87,15 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
             _isProcessing = true;
           });
           try {
-            await _repository.searchCustomer(
-              _selectedIdType!,
-              _verificationIdNumberController.text,
-            );
+            if (_selectedAccountType == 'individual') {
+              await _repository.searchIndividual(
+                _verificationIdNumberController.text,
+              );
+            } else {
+              await _repository.searchBusiness(
+                _verificationIdNumberController.text,
+              );
+            }
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -136,27 +139,15 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     });
 
     try {
-      Map<String, dynamic> customerData = {
-        'id_type': _selectedIdType,
-        'id_number': _verificationIdNumberController.text,
-        'type': _selectedAccountType,
-      };
-
       if (_selectedAccountType == 'individual') {
-        customerData.addAll({
-          'name': '${_firstNameController.text} ${_lastNameController.text}',
-          'phone_number': _phoneController.text,
-          'email': _emailController.text,
-        });
-      } else {
-        customerData.addAll({
-          'name': _organizationNameController.text,
-          'organization_type': _organizationTypeController.text,
-          'kra_pin': _kraPinController.text,
-        });
+        final data = {
+        'first_name': _firstNameController.text,
+        'last_name': _lastNameController.text,
+        'phone_number': _phoneController.text,
+        'email': _emailController.text,
+      };
+        await _repository.registerIndividual(data);
       }
-
-      await _repository.createCustomer(customerData);
       if (mounted) {
         _showConfirmationDialog();
       }

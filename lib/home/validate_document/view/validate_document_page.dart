@@ -35,9 +35,8 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
       } catch (e) {
         setState(() {
           _verificationResult = {
-            'valid': false,
-            'message': 'Error: ${e.toString()}',
-            'data': {}
+            'document': null,
+            'message': 'Error: ${e.toString()}'
           };
         });
       }
@@ -53,7 +52,7 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
       _verifyDocument();
     } else if (_currentStep == 1 &&
         _verificationResult != null &&
-        _verificationResult!['valid'] == true) {
+        _verificationResult!['document'] != null) {
       setState(() {
         _currentStep = 2; // Move to details step
       });
@@ -149,9 +148,10 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
       return const Center(child: Text('Waiting to verify...'));
     }
 
-    final bool isValid = _verificationResult!['valid'] ?? false;
-    final String message =
-        _verificationResult!['message'] ?? 'An unknown error occurred.';
+    final bool isValid = _verificationResult!['document'] != null;
+    final String message = isValid
+        ? 'Document has been verified successfully'
+        : _verificationResult!['message'] ?? 'An unknown error occurred.';
 
     return Center(
       child: Column(
@@ -179,13 +179,14 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
   }
 
   Widget _buildDetailsStep() {
-    if (_verificationResult == null || _verificationResult!['valid'] != true) {
+    if (_verificationResult == null || _verificationResult!['document'] == null) {
       return const Center(
         child: Text('No details to display.'),
       );
     }
 
-    final data = _verificationResult!['data'];
+    final document = _verificationResult!['document'];
+    final applicationData = document['application_data'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,11 +196,12 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
           style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 24),
-        _buildDetailRow('Document Number:', data['document_number'] ?? 'N/A'),
-        _buildDetailRow('Document Type:', data['document_type'] ?? 'N/A'),
-        _buildDetailRow('Status:', data['status'] ?? 'N/A'),
-        _buildDetailRow('Date Verified:', data['date_verified'] ?? 'N/A'),
-        _buildDetailRow('Verifier:', data['verifier'] ?? 'N/A'),
+        _buildDetailRow('Document Number:', document['document_number'] ?? 'N/A'),
+        _buildDetailRow(
+            'Business Name:', applicationData['business_name'] ?? 'N/A'),
+        _buildDetailRow('Status:', document['status'] ?? 'N/A'),
+        _buildDetailRow('Issue Date:', document['issue_date'] ?? 'N/A'),
+        _buildDetailRow('Expiry Date:', document['expiry_date'] ?? 'N/A'),
       ],
     );
   }

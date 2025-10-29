@@ -84,6 +84,37 @@ class ApiService {
 
   Future<dynamic> _handleMockGet(String url) async {
     await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+
+    if (url.startsWith('/adminauth/external/user/kra/id/')) {
+      final idNumber = url.split('/').last;
+      if (idNumber == '12345678') {
+        return {
+          'success': true,
+          'data': {
+            'name': 'John Doe',
+            'phone_number': '123-456-7890',
+            'email': 'john.doe@example.com',
+          },
+        };
+      } else {
+        throw Exception('Customer not found');
+      }
+    } else if (url.startsWith('/adminauth/external/user/kra/real/pin/')) {
+      final pin = url.split('/').last;
+      if (pin == 'A000123456B') {
+        return {
+          'success': true,
+          'data': {
+            'business_name': 'Test Business',
+            'kra_pin': 'A000123456B',
+            'contact_person': 'Jane Doe',
+          },
+        };
+      } else {
+        throw Exception('Business not found');
+      }
+    }
+
     switch (url) {
       case '/services':
         return {
@@ -136,19 +167,174 @@ class ApiService {
         } else {
           return {'success': false, 'message': 'Invalid OTP'};
         }
+      case '/auth/individual/register':
+        return {'success': true, 'message': 'Individual registered successfully'};
       case '/api/e-verify':
         final documentNumber = body['document_number'];
-        if (documentNumber == '12345') {
+        if (documentNumber == 'UBP021739') {
           return {
-            'valid': true,
-            'message': 'Document has been verified successfully',
-            'data': {
-              "document_number": "12345",
-              "document_type": "Appraisal",
-              "status": "verified",
-              "date_verified": "2024-07-31T12:00:00Z",
-              "verifier": "John Doe",
+            "document": {
+              "id": "2e064388-d88a-4ac9-b627-9fbfd4392300",
+              "created_at": "2025-09-19T11:47:22.916505Z",
+              "updated_at": "2025-09-19T11:47:22.916534Z",
+              "is_archived": false,
+              "document_number": "UBP021739",
+              "application_number": "TLA066103",
+              "application_data": {
+                "po_box": "",
+                "cust_no": "2020_74282",
+                "kra_pin": "",
+                "plot_no": "3734/197",
+                "floor_no": "1",
+                "stall_no": "C3",
+                "cust_name": "DAVACC TECH LIMITED",
+                "ward_code": "047002001",
+                "ward_name": "Kilimani",
+                "ubp_amount": "237,840",
+                "street_name": "Ralph bunche rd",
+                "license_type": "Official",
+                "owner_mobile": "",
+                "payment_plan": "Annual",
+                "building_name": "Elgon c3, Ralph Bunche Rd",
+                "business_desc": "",
+                "business_name": "DAVACC TECH LIMITED",
+                "company_email": "waruid@gmail.com",
+                "owner_address": "13783",
+                "businessreg_no": "PVT-AAABAU9",
+                "contact_person": "DAVID  WARUI MUTHAMI",
+                "owner_postcode": "00100",
+                "subcounty_code": "047002000",
+                "subcounty_name": "Dagoretti North",
+                "subsidiary_name": "Westlands Branch",
+                "application_date": "02/29/24",
+                "contact_mobileno": "0724872300",
+                "contactperson_id": "22040031",
+                "application_stage": "SBPInspection",
+                "UBP_Register_Lines": [
+                  {
+                    "amount": "120,000",
+                    "ubp_code": "100",
+                    "ubp_name": "SBP",
+                    "brim_desc":
+                        "800 INDUSTRIAL PLANTS, FACTORIES, WORKSHOPS, CONTRACTORS ",
+                    "fa_category_desc":
+                        "Medium food industrial plant with over 51-100 employees ",
+                    "parameter1_value": "100",
+                    "parameter2_value": "0",
+                    "ubpactivity_Code": "31-33",
+                    "ubpactivity_name": "Manufacturing ",
+                    "inspection_status": " ",
+                    "inspection_comment": "",
+                    "parameter1_caption": "No of employees",
+                    "parameter2_caption": "",
+                    "ubpsubcategory_code": "311",
+                    "ubpsubcategory_name": "Food Processing ",
+                    "ubpsubcategory2_code": "3115",
+                    "ubpsubcategory2_name": "Dairy Product Manufacturing ",
+                    "ubpsubcategory3_code": "31151",
+                    "ubpsubcategory3_name":
+                        "Dairy Product (except Frozen) Manufacturing "
+                  },
+                  {
+                    "amount": "50,000",
+                    "ubp_code": "200",
+                    "ubp_name": "Fire",
+                    "brim_desc": "",
+                    "fa_category_desc": "",
+                    "parameter1_value": "0",
+                    "parameter2_value": "0",
+                    "ubpactivity_Code": "SF",
+                    "ubpactivity_name": "",
+                    "inspection_status": " ",
+                    "inspection_comment": "",
+                    "parameter1_caption": "",
+                    "parameter2_caption": "",
+                    "ubpsubcategory_code": "SF_01",
+                    "ubpsubcategory_name": "",
+                    "ubpsubcategory2_code": "SF_014",
+                    "ubpsubcategory2_name": "",
+                    "ubpsubcategory3_code": "SF_0141",
+                    "ubpsubcategory3_name": ""
+                  },
+                  {
+                    "amount": "2,000",
+                    "ubp_code": "400",
+                    "ubp_name": "Pest Control",
+                    "brim_desc": "",
+                    "fa_category_desc": "",
+                    "parameter1_value": "0",
+                    "parameter2_value": "0",
+                    "ubpactivity_Code": "SF",
+                    "ubpactivity_name": "",
+                    "inspection_status": " ",
+                    "inspection_comment": "",
+                    "parameter1_caption": "",
+                    "parameter2_caption": "",
+                    "ubpsubcategory_code": "SF_01",
+                    "ubpsubcategory_name": "",
+                    "ubpsubcategory2_code": "SF_014",
+                    "ubpsubcategory2_name": "",
+                    "ubpsubcategory3_code": "SF_0141",
+                    "ubpsubcategory3_name": ""
+                  },
+                  {
+                    "amount": "30,000",
+                    "ubp_code": "800",
+                    "ubp_name": "Food Hygiene",
+                    "brim_desc": "",
+                    "fa_category_desc": "",
+                    "parameter1_value": "0",
+                    "parameter2_value": "0",
+                    "ubpactivity_Code": "SF",
+                    "ubpactivity_name": "",
+                    "inspection_status": " ",
+                    "inspection_comment": "",
+                    "parameter1_caption": "",
+                    "parameter2_caption": "",
+                    "ubpsubcategory_code": "SF_01",
+                    "ubpsubcategory_name": "",
+                    "ubpsubcategory2_code": "SF_014",
+                    "ubpsubcategory2_name": "",
+                    "ubpsubcategory3_code": "SF_0141",
+                    "ubpsubcategory3_name": ""
+                  },
+                  {
+                    "amount": "35,840",
+                    "ubp_code": "900",
+                    "ubp_name": "Advertisement",
+                    "brim_desc": "",
+                    "fa_category_desc": "ABOVE CANOPY Illuminated",
+                    "parameter1_value": "2",
+                    "parameter2_value": "2",
+                    "ubpactivity_Code": "SF",
+                    "ubpactivity_name": "Small Format",
+                    "inspection_status": " ",
+                    "inspection_comment": "",
+                    "parameter1_caption": "Length",
+                    "parameter2_caption": "Width",
+                    "ubpsubcategory_code": "SF_01",
+                    "ubpsubcategory_name": "Signboard",
+                    "ubpsubcategory2_code": "SF_015",
+                    "ubpsubcategory2_name": "ABOVE CANOPY Illuminated",
+                    "ubpsubcategory3_code": "SF_0151",
+                    "ubpsubcategory3_name": "ABOVE CANOPY Illuminated"
+                  }
+                ],
+                "nature_of_business": "Registered/Formal",
+                "contact_person_role": "DIRECTOR",
+                "contactperson_email": "waruid@gmail.com"
+              },
+              "issue_date": "2024-03-07",
+              "expiry_date": "2025-03-06",
+              "file_url": null,
+              "status": "Valid",
+              "status_comment": null,
+              "status_date": null,
+              "document_type": 1,
+              "source_register": null
             },
+            "invoices": [],
+            "payments": []
           };
         } else {
           return {

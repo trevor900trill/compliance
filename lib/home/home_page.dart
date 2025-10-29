@@ -550,7 +550,7 @@ class DashboardContent extends StatelessWidget {
     }
 
     return MasonryGridView.count(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.all(10.0),
       crossAxisCount: crossAxisCount,
       mainAxisSpacing: 10,
       crossAxisSpacing: 10,
@@ -589,7 +589,7 @@ class DashboardCard extends StatelessWidget {
                 child: Text(
                   item.title,
                   style: GoogleFonts.lato(
-                    fontSize: 18,
+                    fontSize: 13,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryColor,
                   ),
