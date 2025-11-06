@@ -85,10 +85,10 @@ class _CustomStepperState extends State<CustomStepper>
         foregroundColor: AppTheme.primaryColor,
         elevation: 0,
         automaticallyImplyLeading: false,
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back),
-        //   onPressed: () => context.pop(),
-        // ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppTheme.primaryColor),
+          onPressed: () => context.pop(),
+        ),
         title: Row(
           children: [
             CircleAvatar(
@@ -165,10 +165,6 @@ class _CustomStepperState extends State<CustomStepper>
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
                   ),
                 ),
                 label: Text(
