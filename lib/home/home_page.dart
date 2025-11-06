@@ -91,15 +91,7 @@ class HomePageNarrow extends StatelessWidget {
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title),
-            Text(
-              'For Nairobi County Authorized Staff only',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.white),
-            ),
-          ],
+          children: [Text(title)],
         ),
         actions: const [UserProfileIcon()],
       ),
@@ -546,7 +538,7 @@ class DashboardContent extends StatelessWidget {
     } else if (screenWidth > 600) {
       crossAxisCount = 2;
     } else {
-      crossAxisCount = 2;
+      crossAxisCount = 1;
     }
 
     return MasonryGridView.count(
@@ -589,7 +581,7 @@ class DashboardCard extends StatelessWidget {
                 child: Text(
                   item.title,
                   style: GoogleFonts.lato(
-                    fontSize: 13,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryColor,
                   ),

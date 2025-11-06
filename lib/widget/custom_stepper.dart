@@ -73,9 +73,9 @@ class _CustomStepperState extends State<CustomStepper>
           begin: _progressController.value,
           end: targetProgress,
         ).animate(
-          CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
+          CurvedAnimation(parent: _progressController, curve: Curves.linear),
         );
-    _progressController.forward(from: _progressAnimation.value);
+    _progressController.forward(from: 0.0);
   }
 
   @override
@@ -122,7 +122,7 @@ class _CustomStepperState extends State<CustomStepper>
           preferredSize: const Size.fromHeight(4.0),
           child: LinearProgressIndicator(
             value: _progressAnimation.value,
-            backgroundColor: Colors.grey[300],
+            backgroundColor: Colors.grey[200],
             valueColor: const AlwaysStoppedAnimation<Color>(
               AppTheme.primaryColor,
             ),

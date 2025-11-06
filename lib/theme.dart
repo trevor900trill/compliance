@@ -28,27 +28,42 @@ class AppTheme {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: 16.0,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: const BorderSide(color: primaryColor, width: 2.0),
-        ),
-        labelStyle: GoogleFonts.lato(color: textColor.withAlpha(153)),
-      ),
+inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.white,
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: 20.0,
+      vertical: 16.0,
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16.0),
+      borderSide: BorderSide(color: Colors.grey.shade300),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16.0),
+      borderSide: BorderSide(color: Colors.grey.shade300),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16.0),
+      borderSide: BorderSide(color: primaryColor, width: 2.0),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16.0),
+      borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16.0),
+      borderSide: BorderSide(color: Colors.redAccent, width: 2.0),
+    ),
+    labelStyle: GoogleFonts.lato(
+      color: Colors.grey[600],
+      fontWeight: FontWeight.w500,
+    ),
+    hintStyle: GoogleFonts.lato(
+      color: Colors.grey[400],
+      fontWeight: FontWeight.w400,
+    ),
+  ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,

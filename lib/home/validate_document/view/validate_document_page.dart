@@ -107,10 +107,6 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Enter Document Information',
-            style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
           const SizedBox(height: 24),
           TextFormField(
             controller: _documentNumberController,
@@ -118,7 +114,6 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
               labelText: 'Document Number',
               hintText: 'Enter document number',
               border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.description_outlined, color: Colors.grey),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -193,10 +188,6 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Verified Document Details',
-          style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
         const SizedBox(height: 24),
         _buildDetailRow(
           'Document Number:',
