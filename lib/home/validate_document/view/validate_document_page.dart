@@ -185,42 +185,50 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
     final document = _verificationResult!['document'];
     final applicationData = document['application_data'];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 24),
-        _buildDetailRow(
-          'Document Number:',
-          document['document_number'] ?? 'N/A',
-        ),
-        _buildDetailRow(
-          'Business Name:',
-          applicationData['business_name'] ?? 'N/A',
-        ),
-        _buildDetailRow('Status:', document['status'] ?? 'N/A'),
-        _buildDetailRow('Issue Date:', document['issue_date'] ?? 'N/A'),
-        _buildDetailRow('Expiry Date:', document['expiry_date'] ?? 'N/A'),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 24.0),
+      child: Table(
+        border: TableBorder.all(color: Colors.grey.shade300, width: 1),
+        columnWidths: const <int, TableColumnWidth>{
+          0: IntrinsicColumnWidth(),
+          1: FlexColumnWidth(),
+        },
+        children: [
+          _buildTableRow(
+            'Document Number:',
+            document['document_number'] ?? 'N/A',
+          ),
+          _buildTableRow(
+            'Business Name:',
+            applicationData['business_name'] ?? 'N/A',
+          ),
+          _buildTableRow('Status:', document['status'] ?? 'N/A'),
+          _buildTableRow('Issue Date:', document['issue_date'] ?? 'N/A'),
+          _buildTableRow('Expiry Date:', document['expiry_date'] ?? 'N/A'),
+        ],
+      ),
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: GoogleFonts.lato(fontWeight: FontWeight.bold)),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              value,
-              style: GoogleFonts.lato(),
-              textAlign: TextAlign.end,
+  TableRow _buildTableRow(String label, String value) {
+    return TableRow(
+      children: [
+        Container(
+          color: Colors.grey.shade100,
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          child: Text(
+            label,
+            style: GoogleFonts.lato(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade800,
             ),
           ),
-        ],
-      ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          child: Text(value, style: GoogleFonts.lato()),
+        ),
+      ],
     );
   }
 }
