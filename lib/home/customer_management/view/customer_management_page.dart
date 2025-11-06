@@ -46,9 +46,7 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     'Alien ID': 'alien_id',
   };
 
-  final Map<String, String> _organizationIdTypes = {
-    'KRA PIN': 'kra_pin',
-  };
+  final Map<String, String> _organizationIdTypes = {'KRA PIN': 'kra_pin'};
 
   @override
   void dispose() {
@@ -141,11 +139,11 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     try {
       if (_selectedAccountType == 'individual') {
         final data = {
-        'first_name': _firstNameController.text,
-        'last_name': _lastNameController.text,
-        'phone_number': _phoneController.text,
-        'email': _emailController.text,
-      };
+          'first_name': _firstNameController.text,
+          'last_name': _lastNameController.text,
+          'phone_number': _phoneController.text,
+          'email': _emailController.text,
+        };
         await _repository.registerIndividual(data);
       }
       if (mounted) {
@@ -218,6 +216,13 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
       currentStep: _currentStep,
       onStepContinue: _onStepContinue,
       onComplete: _onComplete,
+      onStepBack: () {
+        if (_currentStep > 0) {
+          setState(() {
+            _currentStep--;
+          });
+        }
+      },
       isLoading: _isProcessing,
       steps: [
         CustomStep(
@@ -263,13 +268,8 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Register Customer',
+            'Choose your account type',
             style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Register a customer in the NairobiPay revenue management system. The customer account will be used for all county services required by the customer. Determine whether the account is for an individual or an organization. Get the identification details of individual or organization to proceed with the account creation.',
-            style: GoogleFonts.lato(fontSize: 16),
           ),
           const SizedBox(height: 24),
           _buildAccountTypeOption(
@@ -363,8 +363,8 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
   Widget _buildVerifyCustomerStep() {
     final Map<String, String> currentIdTypes =
         _selectedAccountType == 'individual'
-            ? _individualIdTypes
-            : _organizationIdTypes;
+        ? _individualIdTypes
+        : _organizationIdTypes;
 
     return Form(
       key: _verifyFormKey,

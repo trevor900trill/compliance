@@ -27,8 +27,9 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
       });
 
       try {
-        final result =
-            await _repository.validateDocument(_documentNumberController.text);
+        final result = await _repository.validateDocument(
+          _documentNumberController.text,
+        );
         setState(() {
           _verificationResult = result;
         });
@@ -36,7 +37,7 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
         setState(() {
           _verificationResult = {
             'document': null,
-            'message': 'Error: ${e.toString()}'
+            'message': 'Error: ${e.toString()}',
           };
         });
       }
@@ -72,23 +73,25 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
       pageTitle: 'Validate Document',
       currentStep: _currentStep,
       onStepContinue: _onStepContinue,
+      onStepBack: () {
+        if (_currentStep > 0) {
+          setState(() {
+            _currentStep--;
+          });
+        }
+      },
       steps: [
         CustomStep(
           title: 'Enter Document Number',
           content: _buildEnterDetailsStep(),
         ),
-        CustomStep(
-          title: 'Verification',
-          content: _buildVerifyStep(),
-        ),
-        CustomStep(
-          title: 'Details',
-          content: _buildDetailsStep(),
-        ),
+        CustomStep(title: 'Verification', content: _buildVerifyStep()),
+        CustomStep(title: 'Details', content: _buildDetailsStep()),
       ],
       onComplete: () {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Validation Process Finished!')));
+          const SnackBar(content: Text('Validation Process Finished!')),
+        );
         setState(() {
           _currentStep = 0;
           _documentNumberController.clear();
@@ -115,7 +118,7 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
               labelText: 'Document Number',
               hintText: 'Enter document number',
               border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.description_outlined),
+              prefixIcon: Icon(Icons.description_outlined, color: Colors.grey),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -179,10 +182,9 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
   }
 
   Widget _buildDetailsStep() {
-    if (_verificationResult == null || _verificationResult!['document'] == null) {
-      return const Center(
-        child: Text('No details to display.'),
-      );
+    if (_verificationResult == null ||
+        _verificationResult!['document'] == null) {
+      return const Center(child: Text('No details to display.'));
     }
 
     final document = _verificationResult!['document'];
@@ -196,9 +198,14 @@ class _ValidateDocumentPageState extends State<ValidateDocumentPage> {
           style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 24),
-        _buildDetailRow('Document Number:', document['document_number'] ?? 'N/A'),
         _buildDetailRow(
-            'Business Name:', applicationData['business_name'] ?? 'N/A'),
+          'Document Number:',
+          document['document_number'] ?? 'N/A',
+        ),
+        _buildDetailRow(
+          'Business Name:',
+          applicationData['business_name'] ?? 'N/A',
+        ),
         _buildDetailRow('Status:', document['status'] ?? 'N/A'),
         _buildDetailRow('Issue Date:', document['issue_date'] ?? 'N/A'),
         _buildDetailRow('Expiry Date:', document['expiry_date'] ?? 'N/A'),

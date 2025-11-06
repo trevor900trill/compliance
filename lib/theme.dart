@@ -56,11 +56,16 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          textStyle: GoogleFonts.lato(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          textStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
           ),
+          textStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
         ),
       ),
     );

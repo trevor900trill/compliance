@@ -2,13 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/widget/custom_stepper.dart';
 
-class InspectionPage extends StatelessWidget {
+class InspectionPage extends StatefulWidget {
   const InspectionPage({super.key});
+
+  @override
+  State<InspectionPage> createState() => _InspectionPageState();
+}
+
+class _InspectionPageState extends State<InspectionPage> {
+  int _currentStep = 0;
 
   @override
   Widget build(BuildContext context) {
     return CustomStepper(
       pageTitle: "Inspection",
+      currentStep: _currentStep,
       steps: [
         CustomStep(
           title: 'Business Details',
@@ -20,6 +28,20 @@ class InspectionPage extends StatelessWidget {
         ),
         CustomStep(title: 'Summary & Signature', content: _buildSummaryStep()),
       ],
+      onStepContinue: () {
+        if (_currentStep < 2) {
+          setState(() {
+            _currentStep++;
+          });
+        }
+      },
+      onStepBack: () {
+        if (_currentStep > 0) {
+          setState(() {
+            _currentStep--;
+          });
+        }
+      },
       onComplete: () {
         // Handle completion
       },

@@ -14,6 +14,7 @@ class CustomStepper extends StatefulWidget {
   final VoidCallback? onComplete;
   final int currentStep;
   final VoidCallback? onStepContinue;
+  final VoidCallback? onStepBack;
   final bool isLoading;
   final String pageTitle;
 
@@ -24,6 +25,7 @@ class CustomStepper extends StatefulWidget {
     this.onComplete,
     this.currentStep = 0,
     this.onStepContinue,
+    this.onStepBack,
     this.isLoading = false,
   });
 
@@ -42,7 +44,7 @@ class _CustomStepperState extends State<CustomStepper>
     _progressController =
         AnimationController(
           vsync: this,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 1000),
         )..addListener(() {
           setState(() {});
         });
@@ -73,8 +75,7 @@ class _CustomStepperState extends State<CustomStepper>
         ).animate(
           CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
         );
-    _progressController.value = _progressAnimation.value;
-    _progressController.forward(from: 0.0);
+    _progressController.forward(from: _progressAnimation.value);
   }
 
   @override
@@ -85,10 +86,6 @@ class _CustomStepperState extends State<CustomStepper>
         foregroundColor: AppTheme.primaryColor,
         elevation: 0,
         automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.primaryColor),
-          onPressed: () => context.pop(),
-        ),
         title: Row(
           children: [
             CircleAvatar(
@@ -133,48 +130,42 @@ class _CustomStepperState extends State<CustomStepper>
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: widget.steps[widget.currentStep].content,
       ),
       bottomNavigationBar: BottomAppBar(
         elevation: 10,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton(
-                onPressed: () => context.go('/home'),
-                child: const Text('Back to Dashboard'),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextButton(
+              onPressed: widget.currentStep == 0
+                  ? () => context.go('/home')
+                  : widget.onStepBack,
+              child: Text(
+                widget.currentStep == 0 ? 'Back to Dashboard' : 'Back',
               ),
-              ElevatedButton.icon(
-                icon: widget.isLoading
-                    ? Container(
-                        width: 24,
-                        height: 24,
-                        padding: const EdgeInsets.all(2.0),
-                        child: const CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 3,
-                        ),
-                      )
-                    : const Icon(Icons.arrow_forward),
-                onPressed: widget.isLoading ? null : widget.onStepContinue,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                label: Text(
-                  widget.currentStep < widget.steps.length - 1
-                      ? 'Next'
-                      : 'Complete',
-                ),
+            ),
+            ElevatedButton.icon(
+              icon: widget.isLoading
+                  ? SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: const CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 3,
+                      ),
+                    )
+                  : const Icon(Icons.arrow_forward),
+              onPressed: widget.isLoading ? null : widget.onStepContinue,
+              label: Text(
+                widget.currentStep < widget.steps.length - 1
+                    ? 'Next'
+                    : 'Complete',
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
