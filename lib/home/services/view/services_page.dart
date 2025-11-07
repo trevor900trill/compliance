@@ -1,111 +1,137 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:myapp/home/services/bloc/services_bloc.dart';
-import 'package:myapp/home/services/model/service_model.dart';
-import 'package:myapp/widget/custom_stepper.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
+import '../../../theme.dart';
 
 class ServicesPage extends StatelessWidget {
   const ServicesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ServicesBloc, ServicesState>(
-      builder: (context, state) {
-        if (state is ServicesLoading || state is ServicesInitial) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is ServicesError) {
-          return Center(child: Text('Error: ${state.error}'));
-        } else if (state is ServicesLoaded) {
-          return CustomStepper(
-            pageTitle: 'Services',
-            steps: [
-              CustomStep(
-                title: 'Select Service',
-                content: _buildServiceSelectionStep(state.services),
-              ),
-              CustomStep(title: 'Fill Details', content: _buildDetailsStep()),
-              CustomStep(title: 'Payment', content: const _PaymentStep()),
-            ],
-            onComplete: () {
-              // Handle completion
-            },
-          );
-        } else {
-          return const Center(child: Text('Something went wrong!'));
-        }
-      },
-    );
-  }
+    final List<DashboardItem> items = [
+      DashboardItem(
+        title: 'Unified Business Permit',
+        icon: Icons.article_outlined,
+        route: '/home/services/unified_business_permit',
+      ),
+      DashboardItem(
+        title: 'Land Rates Bill',
+        icon: Icons.landscape_outlined,
+        route: '/home/services/land_rates_bill',
+      ),
+      DashboardItem(
+        title: 'Fire & Disaster Management',
+        icon: Icons.local_fire_department_outlined,
+        route: '/home/services/fire_disaster_management',
+      ),
+      DashboardItem(
+        title: 'Advertisement (Small Format)',
+        icon: Icons.campaign_outlined,
+        route: '/home/services/advertisement',
+      ),
+    ];
 
-  Widget _buildServiceSelectionStep(List<Service> services) {
-    return Column(
-      children: [
-        DropdownButtonFormField<Service>(
-          items: services.map((service) {
-            return DropdownMenuItem<Service>(
-              value: service,
-              child: Text(service.name),
-            );
-          }).toList(),
-          onChanged: (value) {},
-          decoration: const InputDecoration(labelText: 'Select a Service'),
+    final screenWidth = MediaQuery.of(context).size.width;
+    int crossAxisCount;
+    if (screenWidth > 1200) {
+      crossAxisCount = 4;
+    } else if (screenWidth > 900) {
+      crossAxisCount = 3;
+    } else if (screenWidth > 600) {
+      crossAxisCount = 2;
+    } else {
+      crossAxisCount = 1;
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Services'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
         ),
-      ],
-    );
-  }
-
-  Widget _buildDetailsStep() {
-    return Column(
-      children: const [
-        TextField(decoration: InputDecoration(labelText: 'Business Name')),
-        SizedBox(height: 16),
-        TextField(decoration: InputDecoration(labelText: 'Location')),
-      ],
-    );
-  }
-}
-
-class _PaymentStep extends StatefulWidget {
-  const _PaymentStep();
-
-  @override
-  _PaymentStepState createState() => _PaymentStepState();
-}
-
-class _PaymentStepState extends State<_PaymentStep> {
-  String _paymentMethod = 'mpesa';
-
-  Widget _buildRadioOption(String title, String value) {
-    return InkWell(
-      onTap: () => setState(() => _paymentMethod = value),
-      child: Row(
-        children: [
-          RadioMenuButton(
-            value: value,
-            groupValue: _paymentMethod,
-            onChanged: (String? value) {
-              setState(() {
-                _paymentMethod = value!;
-              });
-            },
-            child: Text(title),
-          ),
-        ],
+      ),
+      body: MasonryGridView.count(
+        padding: const EdgeInsets.all(10.0),
+        crossAxisCount: crossAxisCount,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return DashboardCard(item: items[index]);
+        },
       ),
     );
   }
+}
+
+class DashboardItem {
+  final String title;
+  final IconData icon;
+  final String route;
+
+  DashboardItem({required this.title, required this.icon, required this.route});
+}
+
+class DashboardCard extends StatelessWidget {
+  final DashboardItem item;
+
+  const DashboardCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Choose a payment method.', style: GoogleFonts.lato(fontSize: 16)),
-        const SizedBox(height: 10),
-        _buildRadioOption('M-Pesa', 'mpesa'),
-        _buildRadioOption('Credit Card', 'card'),
-      ],
+    return Container(
+      height: 120,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8F5E9), // Light green background
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.go(item.route),
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 16,
+                left: 16,
+                right: 16, // Added to allow wrapping
+                child: Text(
+                  item.title,
+                  style: GoogleFonts.lato(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryColor,
+                  ),
+                  maxLines: 2, // Allow title to wrap to 2 lines
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Positioned(
+                bottom: -25,
+                right: -25,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD0E8D0), // Darker green circle
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 15,
+                right: 30,
+                child: Icon(item.icon, size: 30, color: AppTheme.primaryColor),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

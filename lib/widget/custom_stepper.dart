@@ -17,6 +17,7 @@ class CustomStepper extends StatefulWidget {
   final VoidCallback? onStepBack;
   final bool isLoading;
   final String pageTitle;
+  final String? backButtonText;
 
   const CustomStepper({
     super.key,
@@ -27,6 +28,7 @@ class CustomStepper extends StatefulWidget {
     this.onStepContinue,
     this.onStepBack,
     this.isLoading = false,
+    this.backButtonText,
   });
 
   @override
@@ -141,11 +143,15 @@ class _CustomStepperState extends State<CustomStepper>
           children: [
             TextButton(
               onPressed: widget.currentStep == 0
-                  ? () => context.go('/home')
+                  ? () => context.pop()
                   : widget.onStepBack,
-              child: Text(
-                widget.currentStep == 0 ? 'Back to Dashboard' : 'Back',
-              ),
+              child: widget.backButtonText != null
+                  ? Text(
+                      widget.currentStep == 0 ? widget.backButtonText! : 'Back',
+                    )
+                  : Text(
+                      widget.currentStep == 0 ? 'Back to Dashboard' : 'Back',
+                    ),
             ),
             ElevatedButton.icon(
               icon: widget.isLoading

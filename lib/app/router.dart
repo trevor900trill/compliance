@@ -12,9 +12,11 @@ import '../home/enforcement/view/enforcement_page.dart';
 import '../home/home_page.dart';
 import '../home/inspection/view/inspection_page.dart';
 import '../home/maps/view/maps_page.dart';
-import '../home/services/bloc/services_bloc.dart';
-import '../home/services/repository/services_repository.dart';
+import '../home/services/view/advertisement_page.dart';
+import '../home/services/view/fire_disaster_management_page.dart';
+import '../home/services/view/land_rates_bill_page.dart';
 import '../home/services/view/services_page.dart';
+import '../home/services/view/unified_business_permit_page.dart';
 import '../home/validate_document/view/validate_document_page.dart';
 
 // Helper class to notify GoRouter of auth state changes
@@ -85,19 +87,44 @@ GoRouter createRouter(BuildContext context) {
                 path: 'customer_management',
                 builder: (context, state) => const CustomerManagementPage(),
               ),
+
+              // GoRoute(
+              //   path: 'services',
+              //   builder: (context, state) {
+              //     return RepositoryProvider(
+              //       create: (context) => ServicesRepository(),
+              //       child: BlocProvider(
+              //         create: (context) =>
+              //             ServicesBloc(context.read<ServicesRepository>())
+              //               ..add(FetchServices()),
+              //         child: const ServicesPage(),
+              //       ),
+              //     );
+              //   },
+              // ),
               GoRoute(
                 path: 'services',
-                builder: (context, state) {
-                  return RepositoryProvider(
-                    create: (context) => ServicesRepository(),
-                    child: BlocProvider(
-                      create: (context) =>
-                          ServicesBloc(context.read<ServicesRepository>())
-                            ..add(FetchServices()),
-                      child: const ServicesPage(),
-                    ),
-                  );
-                },
+                builder: (context, state) => const ServicesPage(),
+                routes: [
+                  GoRoute(
+                    path: 'unified_business_permit',
+                    builder: (context, state) =>
+                        const UnifiedBusinessPermitPage(),
+                  ),
+                  GoRoute(
+                    path: 'land_rates_bill',
+                    builder: (context, state) => const LandRatesBillPage(),
+                  ),
+                  GoRoute(
+                    path: 'fire_disaster_management',
+                    builder: (context, state) =>
+                        const FireDisasterManagementPage(),
+                  ),
+                  GoRoute(
+                    path: 'advertisement',
+                    builder: (context, state) => const AdvertisementPage(),
+                  ),
+                ],
               ),
               GoRoute(
                 path: 'inspection',
