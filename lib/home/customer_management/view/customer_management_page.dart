@@ -225,11 +225,14 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
       },
       isLoading: _isProcessing,
       steps: [
+        // CustomStep(
+        //   title: 'Registration Type',
+        //   content: _buildRegistrationTypeStep(),
+        // ),
         CustomStep(
-          title: 'Registration Type',
-          content: _buildRegistrationTypeStep(),
+          title: 'Choose Account Type',
+          content: _buildAccountTypeStep(),
         ),
-        CustomStep(title: 'Account Type', content: _buildAccountTypeStep()),
         CustomStep(
           title: 'Verify Customer',
           content: _buildVerifyCustomerStep(),
@@ -243,34 +246,30 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     );
   }
 
-  Widget _buildRegistrationTypeStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Select Registration Type',
-          style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 24),
-        RadioMenuButton(
-          value: 'offline',
-          groupValue: 'offline',
-          onChanged: (String? value) {},
-          child: const Text('Offline Customer Registration'),
-        ),
-      ],
-    );
-  }
+  // Widget _buildRegistrationTypeStep() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         'Select Registration Type',
+  //         style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
+  //       ),
+  //       const SizedBox(height: 24),
+  //       RadioMenuButton(
+  //         value: 'offline',
+  //         groupValue: 'offline',
+  //         onChanged: (String? value) {},
+  //         child: const Text('Offline Customer Registration'),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildAccountTypeStep() {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Choose your account type',
-            style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
           const SizedBox(height: 24),
           _buildAccountTypeOption(
             title: 'Individual Account',

@@ -87,7 +87,6 @@ GoRouter createRouter(BuildContext context) {
                 path: 'customer_management',
                 builder: (context, state) => const CustomerManagementPage(),
               ),
-
               // GoRoute(
               //   path: 'services',
               //   builder: (context, state) {
