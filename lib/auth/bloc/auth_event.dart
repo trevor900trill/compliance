@@ -15,3 +15,11 @@ class LogoutRequested extends AuthEvent {}
 class CheckAuthStatus extends AuthEvent {}
 
 class NavigateToLogin extends AuthEvent {}
+
+class ResendOtpRequested extends AuthEvent {
+  final String staffId;
+  final String password;
+
+  ResendOtpRequested({required this.staffId, required this.password});
+}
+

@@ -57,5 +57,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthInitial());
       }
     });
+
+    on<ResendOtpRequested>((event, emit) async {
+      try {
+        // Request new OTP
+        await authRepository.login(
+          event.staffId,
+          event.password,
+        );
+        // Stay in OTP verification state
+        emit(
+          AuthOtpVerification(
+            staffId: event.staffId,
+            password: event.password,
+          ),
+        );
+      } catch (e) {
+        // If resend fails, stay in OTP verification but could show error
+        emit(
+          AuthOtpVerification(
+            staffId: event.staffId,
+            password: event.password,
+          ),
+        );
+      }
+    });
   }
 }

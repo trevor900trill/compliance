@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/theme.dart';
 
 class CustomStep {
@@ -35,51 +36,7 @@ class CustomStepper extends StatefulWidget {
   State<CustomStepper> createState() => _CustomStepperState();
 }
 
-class _CustomStepperState extends State<CustomStepper>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _progressController;
-  late Animation<double> _progressAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _progressController =
-        AnimationController(
-          vsync: this,
-          duration: const Duration(milliseconds: 1000),
-        )..addListener(() {
-          setState(() {});
-        });
-    _updateProgress();
-  }
-
-  @override
-  void didUpdateWidget(CustomStepper oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.currentStep != oldWidget.currentStep) {
-      _updateProgress();
-    }
-  }
-
-  @override
-  void dispose() {
-    _progressController.dispose();
-    super.dispose();
-  }
-
-  void _updateProgress() {
-    final double targetProgress =
-        (widget.currentStep + 1) / widget.steps.length;
-    _progressAnimation =
-        Tween<double>(
-          begin: _progressController.value,
-          end: targetProgress,
-        ).animate(
-          CurvedAnimation(parent: _progressController, curve: Curves.linear),
-        );
-    _progressController.forward(from: 0.0);
-  }
-
+class _CustomStepperState extends State<CustomStepper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,92 +45,251 @@ class _CustomStepperState extends State<CustomStepper>
         foregroundColor: AppTheme.primaryColor,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: Row(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              backgroundColor: AppTheme.primaryColor,
-              child: Text(
-                '${widget.currentStep + 1}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+            Text(
+              widget.pageTitle,
+              style: GoogleFonts.lato(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textColor,
               ),
             ),
-            const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${widget.pageTitle} (${widget.currentStep + 1}/${widget.steps.length})',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                Text(
-                  widget.steps[widget.currentStep].title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
+            const SizedBox(height: 4),
+            Text(
+              'Step ${widget.currentStep + 1} of ${widget.steps.length}: ${widget.steps[widget.currentStep].title}',
+              style: GoogleFonts.lato(
+                fontSize: 13,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.normal,
+              ),
             ),
           ],
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(4.0),
-          child: LinearProgressIndicator(
-            value: _progressAnimation.value,
-            backgroundColor: Colors.grey[200],
-            valueColor: const AlwaysStoppedAnimation<Color>(
-              AppTheme.primaryColor,
-            ),
+          preferredSize: const Size.fromHeight(60.0),
+          child: Column(
+            children: [
+              // Segmented Progress Indicators
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                child: Row(
+                  children: List.generate(
+                    widget.steps.length,
+                    (index) {
+                      final isCompleted = index < widget.currentStep;
+                      final isCurrent = index == widget.currentStep;
+                      final isFuture = index > widget.currentStep;
+
+                      return Expanded(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: AnimatedContainer(
+                                duration: AppTheme.mediumAnimation,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(2),
+                                  gradient: isCompleted || isCurrent
+                                      ? AppTheme.primaryGradient
+                                      : null,
+                                  color: isFuture ? Colors.grey[300] : null,
+                                ),
+                              ),
+                            ),
+                            if (index < widget.steps.length - 1)
+                              const SizedBox(width: 8),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              // Step indicators
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0).copyWith(bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(
+                    widget.steps.length,
+                    (index) {
+                      final isCompleted = index < widget.currentStep;
+                      final isCurrent = index == widget.currentStep;
+
+                      return AnimatedContainer(
+                        duration: AppTheme.mediumAnimation,
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          gradient: isCompleted || isCurrent
+                              ? AppTheme.primaryGradient
+                              : null,
+                          color: !isCompleted && !isCurrent
+                               ? Colors.grey[300]
+                              : null,
+                          shape: BoxShape.circle,
+                          boxShadow: isCurrent
+                              ? [
+                                  BoxShadow(
+                                    color: AppTheme.primaryColor.withOpacity(0.4),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Center(
+                          child: isCompleted
+                              ? const Icon(
+                                  Icons.check,
+                                  color: Colors.white,
+                                  size: 18,
+                                )
+                              : Text(
+                                  '${index + 1}',
+                                  style: GoogleFonts.lato(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: isCurrent
+                                        ? Colors.white
+                                        : Colors.grey[600],
+                                  ),
+                                ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: widget.steps[widget.currentStep].content,
-      ),
-      bottomNavigationBar: BottomAppBar(
-        elevation: 10,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextButton(
-              onPressed: widget.currentStep == 0
-                  ? () => context.pop()
-                  : widget.onStepBack,
-              child: widget.backButtonText != null
-                  ? Text(
-                      widget.currentStep == 0 ? widget.backButtonText! : 'Back',
-                    )
-                  : Text(
-                      widget.currentStep == 0 ? 'Back to Dashboard' : 'Back',
-                    ),
+      body: AnimatedSwitcher(
+        duration: AppTheme.mediumAnimation,
+        transitionBuilder: (child, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.1, 0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
             ),
-            ElevatedButton.icon(
-              icon: widget.isLoading
-                  ? SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: const CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 3,
-                      ),
-                    )
-                  : const Icon(Icons.arrow_forward),
-              onPressed: widget.isLoading ? null : widget.onStepContinue,
-              label: Text(
-                widget.currentStep < widget.steps.length - 1
-                    ? 'Next'
-                    : 'Complete',
-              ),
+          );
+        },
+        child: Padding(
+          key: ValueKey(widget.currentStep),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: widget.steps[widget.currentStep].content,
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
             ),
           ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TextButton.icon(
+                  onPressed: widget.currentStep == 0
+                      ? () => context.pop()
+                      : widget.onStepBack,
+                  icon: Icon(
+                    widget.currentStep == 0
+                        ? Icons.close
+                        : Icons.arrow_back,
+                    size: 20,
+                  ),
+                  label: Text(
+                    widget.currentStep == 0
+                        ? (widget.backButtonText ?? 'Cancel')
+                        : 'Back',
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.grey[700],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: BorderRadius.circular(
+                      AppTheme.buttonBorderRadius,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryColor.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton.icon(
+                    icon: widget.isLoading
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Icon(
+                            widget.currentStep < widget.steps.length - 1
+                                ? Icons.arrow_forward
+                                : Icons.check,
+                            size: 20,
+                          ),
+                    onPressed: widget.isLoading ? null : widget.onStepContinue,
+                    label: Text(
+                      widget.currentStep < widget.steps.length - 1
+                          ? 'Next'
+                          : 'Complete',
+                      style: GoogleFonts.lato(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Colors.white,
+                      shadowColor: Colors.transparent,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppTheme.buttonBorderRadius,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
+

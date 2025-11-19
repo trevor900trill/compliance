@@ -484,10 +484,18 @@ class UserProfileIcon extends StatelessWidget {
 
 class DashboardItem {
   final String title;
+  final String description;
   final IconData icon;
   final String route;
+  final Gradient gradient;
 
-  DashboardItem({required this.title, required this.icon, required this.route});
+  DashboardItem({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.route,
+    required this.gradient,
+  });
 }
 
 class DashboardContent extends StatelessWidget {
@@ -498,33 +506,45 @@ class DashboardContent extends StatelessWidget {
     final List<DashboardItem> items = [
       DashboardItem(
         title: 'Validate Document',
-        icon: Icons.description_outlined,
+        description: 'Verify document authenticity',
+        icon: Icons.verified_outlined,
         route: '/home/validate_document',
+        gradient: AppTheme.validationGradient,
       ),
       DashboardItem(
         title: 'Customer Management',
+        description: 'Manage customer accounts',
         icon: Icons.people_outline,
         route: '/home/customer_management',
+        gradient: AppTheme.customerGradient,
       ),
       DashboardItem(
         title: 'Services',
+        description: 'Access county services',
         icon: Icons.grid_view_outlined,
         route: '/home/services',
+        gradient: AppTheme.servicesGradient,
       ),
       DashboardItem(
         title: 'Inspection',
+        description: 'Property inspections',
         icon: Icons.security_outlined,
         route: '/home/inspection',
+        gradient: AppTheme.inspectionGradient,
       ),
       DashboardItem(
         title: 'Enforcement',
+        description: 'Enforcement actions',
         icon: Icons.policy_outlined,
         route: '/home/enforcement',
+        gradient: AppTheme.enforcementGradient,
       ),
       DashboardItem(
         title: 'Maps',
+        description: 'View location maps',
         icon: Icons.map_outlined,
         route: '/home/maps',
+        gradient: AppTheme.mapsGradient,
       ),
     ];
 
@@ -542,72 +562,133 @@ class DashboardContent extends StatelessWidget {
     }
 
     return MasonryGridView.count(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(16.0),
       crossAxisCount: crossAxisCount,
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
+      mainAxisSpacing: 16,
+      crossAxisSpacing: 16,
       itemCount: items.length,
       itemBuilder: (context, index) {
-        return DashboardCard(item: items[index]);
+        return TweenAnimationBuilder<double>(
+          duration: Duration(milliseconds: 300 + (index * 100)),
+          tween: Tween(begin: 0.0, end: 1.0),
+          curve: Curves.easeOut,
+          builder: (context, value, child) {
+            return Opacity(
+              opacity: value,
+              child: Transform.translate(
+                offset: Offset(0, 20 * (1 - value)),
+                child: child,
+              ),
+            );
+          },
+          child: DashboardCard(item: items[index]),
+        );
       },
     );
   }
 }
 
-class DashboardCard extends StatelessWidget {
+class DashboardCard extends StatefulWidget {
   final DashboardItem item;
 
   const DashboardCard({super.key, required this.item});
 
   @override
+  State<DashboardCard> createState() => _DashboardCardState();
+}
+
+class _DashboardCardState extends State<DashboardCard> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 120,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8F5E9), // Light green background
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => context.go(item.route),
-          borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            children: [
-              Positioned(
-                top: 16,
-                left: 16,
-                child: Text(
-                  item.title,
-                  style: GoogleFonts.lato(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor,
-                  ),
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: AppTheme.mediumAnimation,
+        curve: Curves.easeOut,
+        transform: Matrix4.identity()..scale(_isHovered ? 1.02 : 1.0),
+        child: Container(
+          height: 140,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppTheme.cardBorderRadius),
+            boxShadow: _isHovered ? AppTheme.cardShadowHover : AppTheme.cardShadow,
+            border: Border.all(
+              color: widget.item.gradient.colors.first.withOpacity(0.2),
+              width: 1,
+            ),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => context.push(widget.item.route),
+              borderRadius: BorderRadius.circular(AppTheme.cardBorderRadius),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Gradient Icon
+                    AnimatedContainer(
+                      duration: AppTheme.mediumAnimation,
+                      transform: Matrix4.identity()
+                        ..rotateZ(_isHovered ? 0.05 : 0.0),
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: widget.item.gradient,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.item.gradient.colors.first.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          widget.item.icon,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    // Title
+                    Text(
+                      widget.item.title,
+                      style: GoogleFonts.lato(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textColor,
+                        height: 1.2,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    // Description
+                    Text(
+                      widget.item.description,
+                      style: GoogleFonts.lato(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                        height: 1.3,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ),
-              Positioned(
-                bottom: -25,
-                right: -25,
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD0E8D0), // Darker green circle
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 15,
-                right: 30,
-                child: Icon(item.icon, size: 30, color: AppTheme.primaryColor),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 }
+
