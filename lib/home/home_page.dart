@@ -182,49 +182,49 @@ class SideNavigationPanel extends StatelessWidget {
                 vertical: 16.0,
               ),
               children: [
-                _buildNavItem(
+                _buildModernSideNavItem(
                   context,
                   icon: Icons.dashboard_outlined,
                   title: 'Dashboard',
                   isSelected: currentPath == '/home',
                   onTap: () => context.go('/home'),
                 ),
-                _buildNavItem(
+                _buildModernSideNavItem(
                   context,
                   icon: Icons.description_outlined,
                   title: 'Validate Document',
                   isSelected: currentPath == '/home/validate_document',
                   onTap: () => context.go('/home/validate_document'),
                 ),
-                _buildNavItem(
+                _buildModernSideNavItem(
                   context,
                   icon: Icons.people_outline,
                   title: 'Customer Management',
                   isSelected: currentPath == '/home/customer_management',
                   onTap: () => context.go('/home/customer_management'),
                 ),
-                _buildNavItem(
+                _buildModernSideNavItem(
                   context,
                   icon: Icons.grid_view_outlined,
                   title: 'Services',
                   isSelected: currentPath == '/home/services',
                   onTap: () => context.go('/home/services'),
                 ),
-                _buildNavItem(
+                _buildModernSideNavItem(
                   context,
                   icon: Icons.security_outlined,
                   title: 'Inspection',
                   isSelected: currentPath == '/home/inspection',
                   onTap: () => context.go('/home/inspection'),
                 ),
-                _buildNavItem(
+                _buildModernSideNavItem(
                   context,
                   icon: Icons.policy_outlined,
                   title: 'Enforcement',
                   isSelected: currentPath == '/home/enforcement',
                   onTap: () => context.go('/home/enforcement'),
                 ),
-                _buildNavItem(
+                _buildModernSideNavItem(
                   context,
                   icon: Icons.map_outlined,
                   title: 'Maps',
@@ -235,6 +235,79 @@ class SideNavigationPanel extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildModernSideNavItem(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    bool isSelected = false,
+    VoidCallback? onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 2),
+      decoration: BoxDecoration(
+        gradient: isSelected ? AppTheme.primaryGradient : null,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: AppTheme.primaryColor.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? Colors.white.withOpacity(0.2)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: isSelected
+                        ? Colors.white
+                        : AppTheme.textColor.withOpacity(0.7),
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: GoogleFonts.lato(
+                      fontSize: 15,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      color: isSelected ? Colors.white : AppTheme.textColor,
+                    ),
+                  ),
+                ),
+                if (isSelected)
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 16,
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
