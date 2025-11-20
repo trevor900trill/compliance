@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../widget/custom_stepper.dart';
+import '../../../widgets/customer_validation_step.dart';
+import '../../../models/customer_validation_data.dart';
 import '../repository/customer_management_repository.dart';
 
 class CustomerManagementPage extends StatefulWidget {
@@ -19,12 +21,10 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
   String? _selectedAccountType;
 
   // Form Keys
-  final _verifyFormKey = GlobalKey<FormState>();
   final _detailsFormKey = GlobalKey<FormState>();
 
-  // Verification Controllers
-  String? _selectedIdType; // This will now store the value, e.g., "national_id"
-  final _verificationIdNumberController = TextEditingController();
+  // Customer validation data
+  final CustomerValidationData _customerData = CustomerValidationData();
 
   // Personal Information Controllers
   final _firstNameController = TextEditingController();
@@ -39,18 +39,11 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
 
   bool _isProcessing = false; // Combined loading state for all async operations
 
-  // ID Type Maps
-  final Map<String, String> _individualIdTypes = {
-    'National ID': 'national_id',
-    'Passport': 'passport',
-    'Alien ID': 'alien_id',
-  };
-
-  final Map<String, String> _organizationIdTypes = {'KRA PIN': 'kra_pin'};
+  // Form keys for validation
+  final List<GlobalKey<FormState>> _formKeys = List.generate(3, (_) => GlobalKey<FormState>());
 
   @override
   void dispose() {
-    _verificationIdNumberController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
     _phoneController.dispose();
@@ -65,63 +58,25 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     bool canProceed = false;
 
     switch (_currentStep) {
-      case 0: // Registration Type
-        canProceed = true;
-        break;
-      case 1: // Account Type
-        if (_selectedAccountType != null) {
+      case 0: // Customer Validation (now using CustomerValidationStep)
+        if (_formKeys[_currentStep].currentState?.validate() ?? false) {
+          // Get the account type from customer data
+          _selectedAccountType = _customerData.accountType;
           canProceed = true;
-        } else {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please select an account type.')),
-            );
-          }
         }
         break;
-      case 2: // Verify Customer
-        if (_verifyFormKey.currentState?.validate() ?? false) {
-          setState(() {
-            _isProcessing = true;
-          });
-          try {
-            if (_selectedAccountType == 'individual') {
-              await _repository.searchIndividual(
-                _verificationIdNumberController.text,
-              );
-            } else {
-              await _repository.searchBusiness(
-                _verificationIdNumberController.text,
-              );
-            }
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('A customer with this ID already exists.'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          } catch (e) {
-            canProceed = true;
-          }
-          setState(() {
-            _isProcessing = false;
-          });
-        }
-        break;
-      case 3: // Personal/Organization Information
+      case 1: // Personal/Organization Information
         if (_detailsFormKey.currentState?.validate() ?? false) {
           canProceed = true;
         }
         break;
-      case 4: // Review & Confirm
+      case 2: // Review & Confirm
         canProceed = true;
         break;
     }
 
     if (canProceed) {
-      if (_currentStep == 4) {
+      if (_currentStep == 2) {
         _onComplete();
       } else {
         setState(() {
@@ -137,7 +92,7 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     });
 
     try {
-      if (_selectedAccountType == 'individual') {
+      if (_selectedAccountType == 'Individual') {
         final data = {
           'first_name': _firstNameController.text,
           'last_name': _lastNameController.text,
@@ -169,8 +124,6 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
     setState(() {
       _currentStep = 0;
       _selectedAccountType = null;
-      _selectedIdType = null;
-      _verificationIdNumberController.clear();
       _firstNameController.clear();
       _lastNameController.clear();
       _phoneController.clear();
@@ -225,17 +178,17 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
       },
       isLoading: _isProcessing,
       steps: [
-        // CustomStep(
-        //   title: 'Registration Type',
-        //   content: _buildRegistrationTypeStep(),
-        // ),
         CustomStep(
-          title: 'Choose Account Type',
-          content: _buildAccountTypeStep(),
-        ),
-        CustomStep(
-          title: 'Verify Customer',
-          content: _buildVerifyCustomerStep(),
+          title: 'Customer Validation',
+          content: CustomerValidationStep(
+            data: _customerData,
+            onDataChanged: (data) {
+              setState(() {
+                _selectedAccountType = data.accountType;
+              });
+            },
+            formKey: _formKeys[0],
+          ),
         ),
         CustomStep(title: 'Customer Details', content: _buildDetailsStep()),
         CustomStep(
@@ -243,181 +196,6 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
           content: _buildReviewAndConfirmStep(),
         ),
       ],
-    );
-  }
-
-  // Widget _buildRegistrationTypeStep() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Text(
-  //         'Select Registration Type',
-  //         style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
-  //       ),
-  //       const SizedBox(height: 24),
-  //       RadioMenuButton(
-  //         value: 'offline',
-  //         groupValue: 'offline',
-  //         onChanged: (String? value) {},
-  //         child: const Text('Offline Customer Registration'),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  Widget _buildAccountTypeStep() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          _buildAccountTypeOption(
-            title: 'Individual Account',
-            subtitle:
-                'Create an account for natural persons, both Kenyan Citizens and foreigners. this account is also suitable for unregistered/informal businesses',
-            value: 'individual',
-          ),
-          const SizedBox(height: 16),
-          _buildAccountTypeOption(
-            title: 'Organization Account',
-            subtitle:
-                'Create an account for a registered organization, including Companies, Co-opertives, Churches, Self help groups. Registered organizations will usually have a registered certificate issued by a government authority and have a KRA PIN.',
-            value: 'organization',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAccountTypeOption({
-    required String title,
-    required String subtitle,
-    required String value,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (_selectedAccountType != value) {
-            _selectedAccountType = value;
-            _selectedIdType = null; // Reset the ID type
-          }
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: _selectedAccountType == value
-              ? Theme.of(context).primaryColor.withAlpha(25)
-              : Colors.transparent,
-          border: Border.all(
-            color: _selectedAccountType == value
-                ? Theme.of(context).primaryColor
-                : Colors.grey.shade400,
-            width: _selectedAccountType == value ? 2 : 1,
-          ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            Radio(
-              value: value,
-              groupValue: _selectedAccountType,
-              onChanged: (String? val) {
-                setState(() {
-                  if (_selectedAccountType != val) {
-                    _selectedAccountType = val;
-                    _selectedIdType = null; // Reset the ID type
-                  }
-                });
-              },
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.lato(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.lato(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVerifyCustomerStep() {
-    final Map<String, String> currentIdTypes =
-        _selectedAccountType == 'individual'
-        ? _individualIdTypes
-        : _organizationIdTypes;
-
-    return Form(
-      key: _verifyFormKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Verify Customer Existence',
-            style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Select an ID type and enter the ID number to check if the customer already has an account.',
-            style: GoogleFonts.lato(fontSize: 16),
-          ),
-          const SizedBox(height: 24),
-          DropdownButtonFormField<String>(
-            decoration: const InputDecoration(
-              labelText: 'ID Type',
-              border: OutlineInputBorder(),
-            ),
-            value: _selectedIdType,
-            items: currentIdTypes.entries
-                .map(
-                  (entry) => DropdownMenuItem(
-                    value: entry.value,
-                    child: Text(entry.key),
-                  ),
-                )
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedIdType = value;
-              });
-            },
-            validator: (value) =>
-                value == null ? 'Please select an ID type.' : null,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _verificationIdNumberController,
-            decoration: const InputDecoration(
-              labelText: 'ID Number',
-              border: OutlineInputBorder(),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter an ID number.';
-              }
-              return null;
-            },
-          ),
-        ],
-      ),
     );
   }
 
@@ -534,18 +312,6 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
   }
 
   Widget _buildReviewAndConfirmStep() {
-    // Helper to find the label from the value
-    String getIdTypeLabel(String? value) {
-      if (value == null) return 'N/A';
-      final allIdTypes = {..._individualIdTypes, ..._organizationIdTypes};
-      for (var entry in allIdTypes.entries) {
-        if (entry.value == value) {
-          return entry.key;
-        }
-      }
-      return value; // Fallback to the value itself
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -554,15 +320,19 @@ class _CustomerManagementPageState extends State<CustomerManagementPage> {
           style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 24),
-        _buildReviewDetailItem('ID Type', getIdTypeLabel(_selectedIdType)),
+        _buildReviewDetailItem('ID Type', _customerData.idType ?? 'N/A'),
         _buildReviewDetailItem(
           'ID Number',
-          _verificationIdNumberController.text,
+          _customerData.idNumber ?? 'N/A',
+        ),
+        _buildReviewDetailItem(
+          'Mobile Number',
+          _customerData.mobileNumber ?? 'N/A',
         ),
         const Divider(height: 32),
-        if (_selectedAccountType == 'individual') ...[
+        if (_selectedAccountType == 'Individual') ...[
           _buildReviewIndividualDetails(),
-        ] else if (_selectedAccountType == 'organization') ...[
+        ] else if (_selectedAccountType == 'Organization') ...[
           _buildReviewOrganizationDetails(),
         ],
       ],

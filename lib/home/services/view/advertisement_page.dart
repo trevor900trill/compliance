@@ -128,6 +128,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
           content: CustomerValidationStep(
             data: _customerData,
             onDataChanged: (data) => _customerData,
+            formKey: _formKeys[0],  // Pass the form key
           ),
         ),
         CustomStep(title: 'Advertisement Details', content: _buildAdvertisementDetailsStep()),

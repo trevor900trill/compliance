@@ -18,6 +18,7 @@ class _UnifiedBusinessPermitPageState extends State<UnifiedBusinessPermitPage> {
   bool _isLoading = false;
   final UBPFormData _formData = UBPFormData();
 
+  // We need 8 form keys for 8 steps
   final List<GlobalKey<FormState>> _formKeys = List.generate(8, (_) => GlobalKey<FormState>());
 
   void _onStepContinue() {
@@ -66,6 +67,7 @@ class _UnifiedBusinessPermitPageState extends State<UnifiedBusinessPermitPage> {
           content: CustomerValidationStep(
             data: _formData.customerData,
             onDataChanged: (data) => _formData.customerData = data,
+            formKey: _formKeys[0],  // Pass the form key
           ),
         ),
         CustomStep(

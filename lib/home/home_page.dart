@@ -252,109 +252,119 @@ class AppDrawer extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 16,
-              bottom: 16,
+              top: MediaQuery.of(context).padding.top + 24,
+              bottom: 24,
               left: 24,
               right: 24,
             ),
             decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                bottom: BorderSide(
-                  color: AppTheme.primaryColor.withAlpha(128),
-                  width: 0.5,
+              gradient: AppTheme.primaryGradient,
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primaryColor.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
                 ),
-              ),
+              ],
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CircleAvatar(
-                  radius: 24,
-                  backgroundColor: AppTheme.primaryColor,
-                  child: Icon(
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: const Icon(
                     Icons.person_outline,
                     size: 32,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'John Doe',
-                      style: GoogleFonts.lato(
-                        color: AppTheme.primaryColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'Staff ID: 1234',
-                      style: GoogleFonts.lato(
-                        color: AppTheme.primaryColor.withAlpha(204),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 16),
+                Text(
+                  'John Doe',
+                  style: GoogleFonts.lato(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Staff ID: 1234',
+                  style: GoogleFonts.lato(
+                    color: Colors.white.withOpacity(0.9),
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
           ),
-          const Divider(height: 1),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               children: [
-                _buildNavItem(
+                _buildModernNavItem(
                   context,
                   icon: Icons.dashboard_outlined,
                   title: 'Dashboard',
                   isSelected: currentPath == '/home',
                   onTap: () => context.go('/home'),
                 ),
-                _buildNavItem(
+                _buildModernNavItem(
                   context,
                   icon: Icons.description_outlined,
                   title: 'Validate Document',
                   isSelected: currentPath == '/home/validate_document',
                   onTap: () => context.go('/home/validate_document'),
                 ),
-                _buildNavItem(
+                _buildModernNavItem(
                   context,
                   icon: Icons.people_outline,
                   title: 'Customer Management',
                   isSelected: currentPath == '/home/customer_management',
                   onTap: () => context.go('/home/customer_management'),
                 ),
-                _buildNavItem(
+                _buildModernNavItem(
                   context,
                   icon: Icons.grid_view_outlined,
                   title: 'Services',
                   isSelected: currentPath == '/home/services',
                   onTap: () => context.go('/home/services'),
                 ),
-                _buildNavItem(
+                _buildModernNavItem(
                   context,
                   icon: Icons.security_outlined,
                   title: 'Inspection',
                   isSelected: currentPath == '/home/inspection',
                   onTap: () => context.go('/home/inspection'),
                 ),
-                _buildNavItem(
+                _buildModernNavItem(
                   context,
                   icon: Icons.policy_outlined,
                   title: 'Enforcement',
                   isSelected: currentPath == '/home/enforcement',
                   onTap: () => context.go('/home/enforcement'),
                 ),
-                _buildNavItem(
+                _buildModernNavItem(
                   context,
                   icon: Icons.map_outlined,
                   title: 'Maps',
                   isSelected: currentPath == '/home/maps',
                   onTap: () => context.go('/home/maps'),
+                ),
+                const Divider(height: 32),
+                _buildModernNavItem(
+                  context,
+                  icon: Icons.logout_outlined,
+                  title: 'Logout',
+                  isSelected: false,
+                  isLogout: true,
+                  onTap: () => _showLogoutConfirmationDialog(context),
                 ),
               ],
             ),
@@ -363,65 +373,91 @@ class AppDrawer extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _buildNavItem(
-  BuildContext context, {
-  required IconData icon,
-  required String title,
-  bool isSelected = false,
-  VoidCallback? onTap,
-}) {
-  return Container(
-    decoration: BoxDecoration(
-      border: Border(
-        left: BorderSide(
-          color: isSelected ? AppTheme.primaryColor : Colors.transparent,
-          width: 3,
-        ),
+  
+  Widget _buildModernNavItem(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    bool isSelected = false,
+    bool isLogout = false,
+    VoidCallback? onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        gradient: isSelected ? AppTheme.primaryGradient : null,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: AppTheme.primaryColor.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
-    ),
-    child: Material(
-      color: isSelected
-          ? AppTheme.primaryColor.withAlpha(26)
-          : Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                color: isSelected
-                    ? AppTheme.primaryColor
-                    : AppTheme.textColor.withAlpha(178),
-                size: 20,
-              ),
-              const SizedBox(width: 16),
-              Text(
-                title,
-                style: GoogleFonts.lato(
-                  fontSize: 14,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected
-                      ? AppTheme.primaryColor
-                      : AppTheme.textColor,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context).pop(); // Close drawer
+            onTap?.call();
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: isLogout
+                        ? Colors.red.withOpacity(0.1)
+                        : isSelected
+                            ? Colors.white.withOpacity(0.2)
+                            : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: isLogout
+                        ? Colors.red
+                        : isSelected
+                            ? Colors.white
+                            : AppTheme.textColor.withOpacity(0.7),
+                    size: 22,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              if (isSelected)
-                const Icon(
-                  Icons.arrow_forward_ios_outlined,
-                  size: 14,
-                  color: AppTheme.primaryColor,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: GoogleFonts.lato(
+                      fontSize: 15,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      color: isLogout
+                          ? Colors.red
+                          : isSelected
+                              ? Colors.white
+                              : AppTheme.textColor,
+                    ),
+                  ),
                 ),
-            ],
+                if (isSelected)
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 16,
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 void _showLogoutConfirmationDialog(BuildContext context) {

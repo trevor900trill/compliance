@@ -6,11 +6,13 @@ import '../models/customer_validation_data.dart';
 class CustomerValidationStep extends StatefulWidget {
   final CustomerValidationData data;
   final Function(CustomerValidationData) onDataChanged;
+  final GlobalKey<FormState>? formKey;
 
   const CustomerValidationStep({
     super.key,
     required this.data,
     required this.onDataChanged,
+    this.formKey,
   });
 
   @override
@@ -18,7 +20,7 @@ class CustomerValidationStep extends StatefulWidget {
 }
 
 class _CustomerValidationStepState extends State<CustomerValidationStep> {
-  final _formKey = GlobalKey<FormState>();
+  late GlobalKey<FormState> _formKey;
   late TextEditingController _idNumberController;
   late TextEditingController _mobileNumberController;
   late TextEditingController _otpController;
@@ -26,6 +28,7 @@ class _CustomerValidationStepState extends State<CustomerValidationStep> {
   @override
   void initState() {
     super.initState();
+    _formKey = widget.formKey ?? GlobalKey<FormState>();
     _idNumberController = TextEditingController(text: widget.data.idNumber);
     _mobileNumberController = TextEditingController(text: widget.data.mobileNumber);
     _otpController = TextEditingController(text: widget.data.otp);

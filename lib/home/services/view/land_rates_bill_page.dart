@@ -27,11 +27,12 @@ class _LandRatesBillPageState extends State<LandRatesBillPage> {
   final double landRatesArrears = 12500.00;
   final double currentYearRates = 8500.00;
 
-  final List<GlobalKey<FormState>> _formKeys = List.generate(3, (_) => GlobalKey<FormState>());
+  // We have 4 steps: Customer Validation, Property Details, Confirm Details, Payment
+  final List<GlobalKey<FormState>> _formKeys = List.generate(4, (_) => GlobalKey<FormState>());
 
   void _onStepContinue() {
     if (_formKeys[_currentStep].currentState?.validate() ?? false) {
-      if (_currentStep < 2) {
+      if (_currentStep < 3) {
         setState(() => _currentStep++);
       } else {
         _completePayment();
@@ -74,6 +75,7 @@ class _LandRatesBillPageState extends State<LandRatesBillPage> {
           content: CustomerValidationStep(
             data: _customerData,
             onDataChanged: (data) => _customerData,
+            formKey: _formKeys[0],  // Pass the form key
           ),
         ),
         CustomStep(title: 'Property Details', content: _buildPropertyDetailsStep()),
@@ -356,7 +358,7 @@ class _LandRatesBillPageState extends State<LandRatesBillPage> {
 
   Widget _buildPaymentStep() {
     return Form(
-      key: _formKeys[2],
+      key: _formKeys[3],  // This is step 3 (4th step, 0-indexed)
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

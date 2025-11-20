@@ -54,67 +54,72 @@ class ServicesPage extends StatelessWidget {
     }
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('County Services'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Available Services',
-                  style: GoogleFonts.lato(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textColor,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Available Services',
+                    style: GoogleFonts.lato(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Select a service to get started',
-                  style: GoogleFonts.lato(
-                    fontSize: 14,
-                    color: Colors.grey[600],
+                  const SizedBox(height: 8),
+                  Text(
+                    'Select a service to get started',
+                    style: GoogleFonts.lato(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: MasonryGridView.count(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return TweenAnimationBuilder<double>(
-                  duration: Duration(milliseconds: 300 + (index * 100)),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  curve: Curves.easeOut,
-                  builder: (context, value, child) {
-                    return Opacity(
-                      opacity: value,
-                      child: Transform.translate(
-                        offset: Offset(0, 20 * (1 - value)),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: ServiceCard(item: items[index]),
-                );
-              },
+            Expanded(
+              child: MasonryGridView.count(
+                padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 24.0), // Added bottom padding
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return TweenAnimationBuilder<double>(
+                    duration: Duration(milliseconds: 300 + (index * 100)),
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    curve: Curves.easeOut,
+                    builder: (context, value, child) {
+                      return Opacity(
+                        opacity: value,
+                        child: Transform.translate(
+                          offset: Offset(0, 20 * (1 - value)),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: ServiceCard(item: items[index]),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
